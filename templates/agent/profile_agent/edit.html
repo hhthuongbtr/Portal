@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Portal</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script type="text/javascript" src="/static/angular.min.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
+    
+    
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap-theme.min.css">
+    
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    </script>
+
+    <style>
+        body {
+            padding-top: 60px;
+            padding-bottom: 60px;
+        }
+    </style>
+
+</head>
+<body id="docbody" ng-app="myApp" ng-controller="add_monitorCtrl">
+
+  <div class="container">   
+        <div class="row">
+
+      <form class="form-horizontal" action="/agent/monitor/edit/{{profile_agent_id}}/" method="post"  id="contact_form">
+      {% csrf_token %}
+      <fieldset>
+
+      <!-- Form Name -->
+      <legend>Cập nhật profile agent</legend>
+
+      <!-- Group Name -->
+       
+      <div class="form-group"> 
+        <label class="col-md-4 control-label">Nhóm kênh</label>
+          <div class="col-md-5 selectContainer">
+          <div class="input-group">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+          <select select ng-model="group_name" ng-options="group.name as group.name for group in groups" class="form-control selectpicker" required>
+          </select>
+        </div>
+      </div>
+      </div>
+
+      <!-- Profile name -->
+       
+      <div class="form-group"> 
+        <label class="col-md-4 control-label">Channel</label>
+          <div class="col-md-5 selectContainer">
+          <div class="input-group">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+          <select select ng-model="channel_name" class="form-control selectpicker" name="channel_name">
+            <option value="{{'{{profile_agent[0].channel_name}'}}}" selected> {{'{{profile_agent[0].channel_name}'}}}</option>
+            <option ng-repeat="profile in profiles | filter:{group_name: group_name}:true" value="{{'{{profile.channel_name}'}}}">{{'{{profile.channel_name}'}}}</option>
+          </select>
+        </div>
+      </div>
+      </div>
+
+      <!-- Profile type -->
+       
+      <div class="form-group"> 
+        <label class="col-md-4 control-label">Profile</label>
+          <div class="col-md-5 selectContainer">
+          <div class="input-group">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+          <select select ng-model="profile_id" class="form-control selectpicker" name="profile_id">
+            <option value="{{'{{profile_agent[0].id}'}}}" selected="selected"> {{'{{profile_agent[0].type}'}}} - {{'{{profile_agent[0].channel_name}'}}} - {{'{{profile_agent[0].ip}'}}}</option>-->
+            <option ng-repeat="profile in profiles | filter:{group_name: group_name, channel_name:channel_name}:true" value="{{'{{profile.id}'}}}">{{'{{profile.type}'}}} - {{'{{profile.channel_name}'}}} - {{'{{profile.ip}'}}}</option>
+          </select>
+        </div>
+      </div>
+      </div>
+      <!-- Agent -->
+       
+      <div class="form-group"> 
+        <label class="col-md-4 control-label">Agent</label>
+          <div class="col-md-5 selectContainer">
+          <div class="input-group">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+          <select select ng-model="agent_id" class="form-control selectpicker" name="agent_id" required>
+            <option value="{{'{{profile_agent[0].agent_id}'}}}" selected="selected"> {{'{{profile_agent[0].agent_name}'}}}</option>
+            <option ng-repeat="agent in agents" value="{{'{{agent.id}'}}}">{{'{{agent.name}'}}}</option>
+          </select>
+        </div>
+      </div>
+      </div>
+
+        <!-- Monitor -->
+       
+      <div class="form-group"> 
+        <label class="col-md-4 control-label">Monitor</label>
+          <div class="col-md-5 selectContainer">
+          <div class="input-group">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+          <select ng-if = "profile_agent[0].monitor === 1" name="monitor" class="form-control selectpicker" >
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+          <select ng-if = "profile_agent[0].monitor === 0" name="monitor" class="form-control selectpicker" >
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+          </select>   
+        </div>
+      </div>
+      </div>
+
+      <!-- Analyzer:-->
+      <div class="form-group"> 
+        <label class="col-md-4 control-label">Analyzer:</label>
+          <div class="col-md-5 selectContainer">
+          <div class="input-group">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+          <select ng-if = "profile_agent[0].anylyzer === 1" name="analyzer" class="form-control selectpicker" >
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+          <select ng-if = "profile_agent[0].anylyzer === 0" name="analyzer" class="form-control selectpicker" >
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+          </select>      
+        </div>
+      </div>
+      </div>
+
+
+      <!-- Dropframe Limit:-->
+      <div class="form-group">
+        <label class="col-md-4 control-label">Dropframe Limit: </label>  
+        <div class="col-md-5 inputGroupContainer">
+        <div class="input-group">
+        <span class="input-group-addon"><i class="glyphicon glyphicon-font"></i></span>
+        <input  name="dropframe" value="{{'{{profile_agent[0].dropframe_limit}'}}}" class="form-control"  type="number">
+          </div>
+        </div>
+      </div>
+
+
+      <!-- CCError Limit:-->
+
+      <div class="form-group">
+        <label class="col-md-4 control-label">CCError Limit :</label>  
+        <div class="col-md-5 inputGroupContainer">
+        <div class="input-group">
+        <span class="input-group-addon"><i class="glyphicon glyphicon-font"></i></span>
+        <input  name="cceror" value="{{'{{profile_agent[0].ccerror_limit}'}}}" class="form-control"  type="number">
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- Button -->
+      <div class="form-group">
+        <label class="col-md-4 control-label"></label>
+        <div class="col-md-5">
+          <button type="submit" class="btn btn-success" name="save" >Save <span class="glyphicon glyphicon-save"></span></button>
+        </div>
+      </div>
+
+      </fieldset>
+      </form>
+      </div>
+  </div><!-- /.container -->
+<script>
+
+var app = angular.module('myApp',[]);
+
+app.controller("add_monitorCtrl", function ($scope,$http,$timeout){
+
+  $scope.reload = function () {
+    $http.get('/channel/group/json/').
+        then(function (response) {
+            $scope.groups = response.data.group;
+            console.log($scope.groups);
+      });
+    $http.get('/agent/monitor/add/pbg/json/').
+        then(function (response1) {
+            $scope.profiles = response1.data.profile_by_group;
+            console.log($scope.profiles);
+      });
+    $http.get('/agent/json/').
+        then(function (agent_response) {
+            $scope.agents = agent_response.data.agents;
+            console.log($scope.agents);
+      });
+    $http.get('/agent/monitor/{{profile_agent_id}}/json/').
+        then(function (profile_agent_response) {
+            $scope.profile_agent = profile_agent_response.data.profile_agent_item;
+            console.log($scope.profile_agent);
+      });
+  };
+  $scope.reload();
+});
+</script>
+</body>
+</html>

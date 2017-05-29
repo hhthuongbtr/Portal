@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row" width ="100%">
+
+  <form class="well form-horizontal" action="/agent/add/ " method="post"  id="contact_form">
+  {% csrf_token %}
+  <fieldset>
+
+  <!-- Form Name -->
+  <legend>Thêm mới Agent!</legend>
+
+  <!-- Text input-->
+
+  <div class="form-group">
+    <label class="col-md-4 control-label">Tên server: </label>  
+    <div class="col-md-4 inputGroupContainer">
+    <div class="input-group">
+    <span class="input-group-addon"><i class="glyphicon glyphicon-font"></i></span>
+    <input  name="name" placeholder="server name" class="form-control"  type="text">
+      </div>
+    </div>
+  </div>
+
+  <!-- Text input-->
+
+  <div class="form-group">
+    <label class="col-md-4 control-label" >IP:</label> 
+      <div class="col-md-4 inputGroupContainer">
+      <div class="input-group">
+    <span class="input-group-addon"><i class="glyphicon glyphicon-hand-right"></i></span>
+    <input name="ip" placeholder="IP" class="form-control"  type="text">
+      </div>
+    </div>
+  </div>
+
+  <!-- Text area -->
+    
+  <div class="form-group">
+    <label class="col-md-4 control-label">Mô tả</label>
+      <div class="col-md-4 inputGroupContainer">
+      <div class="input-group">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+            <textarea class="form-control" name="descr" placeholder="Mô tả"></textarea>
+    </div>
+    </div>
+  </div>
+
+
+  <!-- Text input-->
+
+  <div class="form-group">
+    <label class="col-md-4 control-label" >Thread:</label> 
+      <div class="col-md-4 inputGroupContainer">
+      <div class="input-group">
+    <span class="input-group-addon"><i class="glyphicon glyphicon-hand-right"></i></span>
+    <input name="thread" placeholder="Thread" class="form-control"  type="number" value="20">
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Active -->
+   <div class="form-group">
+      <label class="col-md-4 control-label">Active?</label>
+      <div class="col-md-4">
+          <div class="radio">
+              <label>
+                  <input type="radio" name="active" value="yes" /> Yes
+              </label>
+          </div>
+          <div class="radio">
+              <label>
+                  <input type="radio" name="active" value="no" /> No
+              </label>
+          </div>
+      </div>
+    </div>
+
+
+  <!-- Button -->
+  <div class="form-group">
+    <label class="col-md-4 control-label"></label>
+    <div class="col-md-4">
+      <button type="submit" class="btn btn-success" name="save" >Save <span class="glyphicon glyphicon-save"></span></button>
+    </div>
+  </div>
+
+  </fieldset>
+  </form>
+  </div>
+    </div><!-- /.container -->
+{% endblock %}

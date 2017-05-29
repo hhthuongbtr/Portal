@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Portal</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script type="text/javascript" src="/static/angular.min.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
+    
+    
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap-theme.min.css">
+    
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    </script>
+
+    <style>
+        body {
+            padding-top: 60px;
+            padding-bottom: 60px;
+        }
+    </style>
+
+</head>
+<body id="docbody" ng-app="myApp" ng-controller="channel_groupCtrl">
+    {% block nav %}
+        {% include 'nav.html' %}
+    {% endblock %}
+
+  <div class="container"> 
+<!--Control-->
+      <div class="row">
+        <form action="/channel/group/control/" method="post" >
+          <table width="100%">
+            <tr>
+              <td width="50%" align="left">
+                              <!-- Name -->
+              <div class="form-group"> 
+                  <div class="input-group">
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                      <input type="text" name="search" ng-model="search" class="form-control" placeholder="Search">
+                </div>
+              </div>
+              </td>
+              <td width="50%" align="right"  ng-hide = "!{{ is_staff }}" ng-show = "{{is_staff}}">
+                <input type="submit" name="btnadd" value="Add" class="btn btn-success btn-xs">
+                <input type="submit" name="btndelete" value="Delete" class="btn btn-danger btn-xs">
+              </td>
+            </tr>
+          </table>
+<!--end control-->  
+                   <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" ng-model="allGroup" name="sellectallgroup" id="sellectallgroup"></th>
+                              <th>STT</th>
+                              <th>ID</th>
+                              <th>Tên nhóm kênh</th>
+                              <th>Số lượng kênh</th>
+                              <th ng-hide = "!{{ is_staff }}" ng-show = "{{is_staff}}"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in myData | filter:search | startFrom:currentPage*pageSize | limitTo:pageSize">
+                                <td><input type="checkbox" ng-checked="allGroup" name="sellectgroup" id="sellectgroup" value="{{'{{item.id}'}}}"></td>
+                                <td>{{'{{$index + 1}'}}}</td>
+                                <td>{{'{{item.id}'}}}</td>
+                                <td>{{'{{item.name}'}}}</td>
+                                <td>
+                                    <a ng-if='item.count_profile > 0' href="/channel/group/{{'{{item.id}'}}}/" title="Click để xem các kênh thuộc nhóm {{'{{item.name}'}}}">{{'{{item.count_profile}'}}}</a>
+                                    <span ng-if='item.count_profile === 0' > 0 </span>
+                                </td>
+                              <td ng-hide = "!{{ is_staff }}" ng-show = "{{is_staff}}">
+                                <a href="/channel/group/edit/{{'{{item.id}'}}}/"><span class="glyphicon glyphicon-edit" aria-hidden="true" title="edit"></span></a>
+                              </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                              <td colspan="5" class="text-center">---</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div><!--end of .table-responsive-->
+        </form>
+      </div>
+              <!-- pager -->
+              <div>
+                <button ng-click="currentPage = 0">
+                    First
+                </button>
+                <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
+                    Previous
+                </button>
+                {{'{{currentPage+1}'}}}/{{'{{numberOfPages()}'}}}
+                <button ng-disabled="currentPage >= numberOfPages() - 1" ng-click="currentPage=currentPage+1">
+                    Next
+                </button>
+                <button ng-click="currentPage=numberOfPages() -1">
+                    Last
+                </button>
+              </div>
+              <!--end pager -->
+  </div><!-- /.container -->
+<script>
+var app = angular.module('myApp',[]);
+
+app.controller("channel_groupCtrl", function ($scope,$http){
+  $scope.currentPage = 0;
+  $scope.pageSize = 50;
+
+  $scope.reload = function () {
+    $http.get('/channel/group/json/').
+        then(function (response) {
+            $scope.myData = response.data.group;
+            console.log($scope.myData);
+      });
+  $scope.numberOfPages=function(){
+        return Math.ceil($scope.myData.length/$scope.pageSize);                
+    }
+  };
+  $scope.reload();
+});
+
+app.filter('startFrom', function() {
+    return function(input, start) {
+        start = +start; //parse to int
+        return input.slice(start);
+    }
+});
+</script>
+</body>
+</html>

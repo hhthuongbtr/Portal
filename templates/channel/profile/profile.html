@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Portal</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script type="text/javascript" src="/static/angular.min.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
+    
+    
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap-theme.min.css">
+    
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    </script>
+
+    <style>
+        body {
+            padding-top: 60px;
+            padding-bottom: 60px;
+        }
+    </style>
+
+</head>
+<body id="docbody" ng-app="myApp" ng-controller="profileCtrl">
+    {% block nav %}
+        {% include 'nav.html' %}
+    {% endblock %}
+
+  <div class="container">  
+
+<!--Control-->
+    <div class="col-md-12"> 
+      <div class="row">
+        <table width="100%">
+          <tr>
+            <th>
+              Name
+            </th>
+            <th>
+              Profile
+            </th>
+            <th>
+              Profile IP
+            </th>
+            <th>
+              Status
+            </th>
+          </tr>
+          <tr>
+            <td>
+              <!-- Name -->
+              <div class="form-group"> 
+                  <div class="input-group">
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                      <input type="text" name="channel_name" ng-model="channel_name" class="form-control">
+                </div>
+              </div>
+            </td>
+            <td>
+              <!-- profile type -->
+              <div class="form-group"> 
+                  <div class="input-group">
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+                        <select name="profile" ng-model="type" class="form-control selectpicker">
+                          <option ></option>
+                          <option >SD-300</option>
+                          <option >SD-500</option>
+                          <option >SD-1000</option>
+                          <option >SD-2500</option>
+                          <option >SD-TransIP</option>
+                          <option >SD-Source</option>
+                          <option >HD-500</option>
+                          <option >HD-1000</option>
+                          <option >HD-2000</option>
+                          <option >HD-4000</option>
+                          <option >HD-8000</option>
+                          <option >HD-TransIP</option>
+                          <option >HD-Source</option>
+                          <option >SD-Khác</option>
+                          <option >HD-Khác</option>
+                        </select>
+                </div>
+              </div>
+            </td>
+            <td>
+              <!-- IP -->
+              <div class="form-group"> 
+                  <div class="input-group">
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                     <input type="text" name="ip" ng-model="ip" class="form-control">
+                </div>
+              </div>
+            </td>
+            <td>
+              <!-- Status -->
+              <div class="form-group"> 
+                  <div class="input-group">
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+                      <select select ng-model="status" class="form-control selectpicker" name="agent_id" required>
+                        <option></option>
+                        <option value="1">OK</option>
+                        <option value="0">No Source</option>
+                        <option value="2">No Video</option>
+                        <option value="3">No Audio</option>
+                      </select>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </table>
+        <form action="/channel/profile/control/" method="post" >
+          <table width="100%" ng-hide = "!{{ is_staff }}" ng-show = "{{is_staff}}">
+            <tr>
+              <td width="50%" align="left">
+                <input type="submit" name="btnactive" value="Active" class="btn btn-success btn-xs">
+                <input type="submit" name="btndeactive" value="Deactive" class="btn btn-warning btn-xs">
+              </td>
+              <td width="50%" align="right">
+                <input type="submit" name="btnadd" value="Add" class="btn btn-success btn-xs">
+                <input type="submit" name="btndelete" value="Delete" class="btn btn-danger btn-xs">
+              </td>
+            </tr>
+          </table>
+
+  <!-- end control-->
+               <div class="table-responsive">
+                <table class="table table-bordered table-hover" style="display: block;height: 800px;overflow-y: scroll;">
+                  <thead>
+                    <tr>
+                      <th><input type="checkbox" ng-model="allprofile" name="SellectAllProfile" id="SellectAllProfile"></th>
+                      <th>STT</th>
+                      <th>Channel</th>
+                      <th>Profile</th>
+                      <th>IP : Port</th>
+                      <th>Protc</th>
+                      <th>Status</th>
+                      <th>Active</th>
+                      <th>Monitor</th>
+                      <th>Group</th>
+                      <th>Descr</th>
+                      <th>Last Update</th>
+                      <th ng-hide = "!{{ is_staff }}" ng-show = "{{is_staff}}"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat="item in myData| filter:{channel_name: channel_name, type: type, ip: ip, status: status} | startFrom:currentPage*pageSize | limitTo:pageSize">
+                      <td><input type="checkbox" ng-checked="allprofile" name="SellectProfile" id="SellectProfile" value="{{'{{item.id}'}}}"></td>
+                      <td>{{'{{$index + 1}'}}}</td>
+                      <td>{{'{{item.channel_name}'}}}</td>
+                      <td>{{'{{item.type}'}}}</td>
+                      <td>{{'{{item.ip}'}}}</td>
+                      <td>{{'{{item.protocol}'}}}</td>
+                      <td>
+                            <span ng-if='item.status === 0' style="color: red" >No source</span>
+                            <span ng-if='item.status === 1' style="color: green" >OK</span>
+                            <span ng-if='item.status === 2' style="color: red" >No Video</span>
+                            <span ng-if='item.status === 3' style="color: red" >No Audio</span>
+                      </td>
+                      <td>
+                            <span style="color: green" ng-if ='item.active === 1'>Yes</span>
+                            <span style="color: red" ng-if ='item.active === 0'>No</span>
+                      </td>
+                      <td>
+                            <span style="color: green" ng-if ='item.monitor === 1'>Yes</span>
+                            <span style="color: red" ng-if ='item.monitor === 0'>No</span>
+                      </td>
+                      <td>
+                            <ul ng-repeat="i in item.group">
+                                <li>{{'{{i[1]}'}}}</li>
+                            </ul>
+                      </td>
+                      <td>{{'{{item.descr}'}}}</td>
+                      <td>{{'{{item.last_update}'}}}</td>
+                      <td ng-hide = "!{{ is_staff }}" ng-show = "{{is_staff}}">
+                        <a href="/channel/profile/edit/{{'{{item.id}'}}}/"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                      </td>
+                    </tr>
+                  </tbody>
+                    <tr>
+                      <td colspan="12" class="text-center">---</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div><!--end of .table-responsive-->
+        </form>   
+              <!-- pager -->
+              <div>
+                <button ng-click="currentPage = 0">
+                    First
+                </button>
+                <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
+                    Previous
+                </button>
+                {{'{{currentPage+1}'}}}/{{'{{numberOfPages()}'}}}
+                <button ng-disabled="currentPage >= numberOfPages() - 1" ng-click="currentPage=currentPage+1">
+                    Next
+                </button>
+                <button ng-click="currentPage=numberOfPages() -1">
+                    Last
+                </button>
+              </div>
+              <!-- end pager -->
+  </div><!-- /.container -->
+<script>
+var app = angular.module('myApp',[]);
+
+app.controller("profileCtrl", function ($scope,$http,$timeout){
+  $scope.currentPage = 0;
+  $scope.pageSize = 100;
+
+  $scope.reload = function () {
+    $http.get('/channel/profile/json/').
+        then(function (response) {
+            $scope.myData = response.data.profile;
+            console.log($scope.myData);
+      });
+  $scope.numberOfPages=function(){
+        return Math.ceil($scope.myData.length/$scope.pageSize);                
+    }
+    $timeout(function(){
+      $scope.reload();
+    },60000)
+  };
+  $scope.reload();
+});
+app.filter('startFrom', function() {
+    return function(input, start) {
+        start = +start; //parse to int
+        return input.slice(start);
+    }
+});
+</script>
+</body>
+</html>

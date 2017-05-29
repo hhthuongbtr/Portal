@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Portal</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script type="text/javascript" src="/static/angular.min.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
+    
+    
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap-theme.min.css">
+    
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    </script>
+
+    <style>
+        body {
+            padding-top: 60px;
+            padding-bottom: 60px;
+        }
+    </style>
+
+</head>
+<body id="docbody" ng-app="myApp" ng-controller="add_monitorCtrl">
+
+  <div class="container">   
+        <div class="row">
+
+      <form class="form-horizontal" action="/agent/monitor/add/" method="post"  id="contact_form">
+      {% csrf_token %}
+      <fieldset>
+
+      <!-- Form Name -->
+      <legend>Thêm Mới profile agent</legend>
+
+      <!-- Channel Name -->
+       
+      <div class="form-group"> 
+        <label class="col-md-4 control-label">Nhóm kênh</label>
+          <div class="col-md-5 selectContainer">
+          <div class="input-group">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+          <select select ng-model="group_name" ng-options="group.name as group.name for group in groups" class="form-control selectpicker" >
+            <!--<option></option>
+            <option ng-repeat="group in groups" value="{{'{{group.id}'}}}">{{'{{group.name}'}}}</option>-->
+          </select>
+        </div>
+      </div>
+      </div>
+
+
+        <!-- Profile Name -->
+       
+      <div class="form-group"> 
+        <label class="col-md-4 control-label">Profile</label>
+        <div class="col-md-5 table-responsive">
+          <table class="table table-bordered table-hover" style="display: block;height: 200px;overflow-y: scroll; font-size: 12px">
+            <thead>
+              <tr>
+                <th><input type="checkbox" ng-model="allprofile" name="SellectAllProfile" id="SellectAllProfile"></th>
+                <th>STT</th>
+                <th>Channel</th>
+                <th>Type</th>
+                <th>IP</th>
+                <th>group</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="profile in profiles | filter:{group_name: group_name}:true">
+                <td><input type="checkbox" ng-checked="allprofile" name="SellectProfile" id="SellectProfile" value="{{'{{profile.id}'}}}"></td>
+                <td>{{'{{$index +1}'}}}</td>
+                <td>{{'{{profile.channel_name}'}}}</td>
+                <td>{{'{{profile.type}'}}}</td>
+                <td>{{'{{profile.ip}'}}}</td>
+                <td>{{'{{profile.group_name}'}}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+          <!-- Agents -->
+       
+      <div class="form-group"> 
+        <label class="col-md-4 control-label">Chọn agent</label>
+          <div class="col-md-5 selectContainer">
+
+          <table class="table table-bordered table-hover" style="display: block;height: 150px;overflow-y: scroll; font-size: 12px">
+            <thead>
+              <tr>
+                <th><input type="checkbox" ng-model="allagent" name="SellectAllAgent" id="SellectAllAgent"></th>
+                <th>STT</th>
+                <th>Name</th>
+                <th>IP</th>
+                <th>Description</th>
+                <th>Active</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="agent in agents">
+                <td><input type="checkbox" ng-checked="allagent" name="SellectAgent" id="SellectAgent" value="{{'{{agent.id}'}}}"></td>
+                <td>{{'{{$index +1}'}}}</td>
+                <td>{{'{{agent.name}'}}}</td>
+                <td>{{'{{agent.ip}'}}}</td>
+                <td>{{'{{agent.descr}'}}}</td>
+                <td>
+                  <span ng-if = "agent.active === 1">True</span>
+                  <span ng-if = "agent.active === 0">False</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+      </div>
+      </div>
+
+        <!-- Monitor -->
+       
+      <div class="form-group"> 
+        <label class="col-md-4 control-label">Monitor</label>
+          <div class="col-md-5 selectContainer">
+          <div class="input-group">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+          <select name="monitor" class="form-control selectpicker" >
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+      </div>
+      </div>
+
+      <!-- Analyzer:-->
+      <div class="form-group"> 
+        <label class="col-md-4 control-label">Analyzer:</label>
+          <div class="col-md-5 selectContainer">
+          <div class="input-group">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+          <select name="analyzer" class="form-control selectpicker" >
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+      </div>
+      </div>
+
+
+      <!-- Dropframe Limit:-->
+      <div class="form-group">
+        <label class="col-md-4 control-label">Dropframe Limit: </label>  
+        <div class="col-md-5 inputGroupContainer">
+        <div class="input-group">
+        <span class="input-group-addon"><i class="glyphicon glyphicon-font"></i></span>
+        <input  name="dropframe" value="50" class="form-control"  type="number">
+          </div>
+        </div>
+      </div>
+
+
+      <!-- CCError Limit:-->
+
+      <div class="form-group">
+        <label class="col-md-4 control-label">CCError Limit :</label>  
+        <div class="col-md-5 inputGroupContainer">
+        <div class="input-group">
+        <span class="input-group-addon"><i class="glyphicon glyphicon-font"></i></span>
+        <input  name="cceror" value="50" class="form-control"  type="number">
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- Button -->
+      <div class="form-group">
+        <label class="col-md-4 control-label"></label>
+        <div class="col-md-5">
+          <button type="submit" class="btn btn-success" name="save" >Save <span class="glyphicon glyphicon-save"></span></button>
+        </div>
+      </div>
+
+      </fieldset>
+      </form>
+      </div>
+  </div><!-- /.container -->
+<script>
+
+var app = angular.module('myApp',[]);
+
+app.controller("add_monitorCtrl", function ($scope,$http,$timeout){
+
+  $scope.reload = function () {
+    $http.get('/channel/group/json/').
+        then(function (response) {
+            $scope.groups = response.data.group;
+            console.log($scope.groups);
+      });
+    $http.get('/agent/monitor/add/pbg/json/').
+        then(function (response1) {
+            $scope.profiles = response1.data.profile_by_group;
+            console.log($scope.profiles);
+      });
+    $http.get('/agent/json/').
+        then(function (agent_response) {
+            $scope.agents = agent_response.data.agents;
+            console.log($scope.agents);
+      });
+  };
+  $scope.reload();
+});
+</script>
+</body>
+</html>

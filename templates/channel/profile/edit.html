@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row" width ="100%">
+  {% for item in profile %}
+  <form class="well form-horizontal" action="/channel/profile/edit/{{item.id}}/" method="post"  id="contact_form">
+  {% csrf_token %}
+  <fieldset>
+
+  <!-- Form Name -->
+  <legend>Chỉnh sửa profile</legend>
+
+  <!-- Channel Name -->
+  <div class="form-group"> 
+    <label class="col-md-4 control-label">Tên Channel</label>
+      <div class="col-md-4 selectContainer">
+      <div class="input-group">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+      <select name="channel" class="form-control selectpicker" >
+      <option value="{{channel.id}}">{{channel.name}}</option>
+      {% for channel in channels %}
+        {% if channel.id == item.channel_id %}
+        <option value="{{channel.id}}" selected="selected">{{channel.name}}</option>
+        {% else %}
+        <option value="{{channel.id}}">{{channel.name}}</option>
+        {% endif %}
+      {% endfor %}
+      </select>
+    </div>
+  </div>
+  </div>
+
+  <!-- IP-->
+
+  <div class="form-group">
+    <label class="col-md-4 control-label" >IP:</label> 
+      <div class="col-md-4 inputGroupContainer">
+      <div class="input-group">
+    <span class="input-group-addon"><i class="glyphicon glyphicon-hand-right"></i></span>
+    <input name="ip" placeholder="IP" class="form-control"  type="text" value="{{item.ip}}">
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Name-->
+   
+  <div class="form-group"> 
+    <label class="col-md-4 control-label">Tên Profile</label>
+      <div class="col-md-4 selectContainer">
+      <div class="input-group">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+      <select name="profile" class="form-control selectpicker">
+        <option selected="selected">{{item.type}}</option>
+        <option >SD-300</option>
+        <option >SD-500</option>
+        <option >SD-1000</option>
+        <option >SD-2500</option>
+        <option >SD-TransIP</option>
+        <option >SD-Source</option>
+        <option >HD-500</option>
+        <option >HD-1000</option>
+        <option >HD-2000</option>
+        <option >HD-4000</option>
+        <option >HD-8000</option>
+        <option >HD-TransIP</option>
+        <option >HD-Source</option>
+        <option >SD-Khác</option>
+        <option >HD-Khác</option>
+      </select>
+    </div>
+  </div>
+  </div>
+
+
+  <!-- Protocol-->
+   
+  <div class="form-group"> 
+    <label class="col-md-4 control-label">Protocol</label>
+      <div class="col-md-4 selectContainer">
+      <div class="input-group">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+      <select name="protocol" class="form-control selectpicker" >
+        <option >{{item.protocol}} </option>
+        <option >udp</option>
+        <option >rmtp</option>
+      </select>
+    </div>
+  </div>
+  </div>
+
+
+  <!-- Monitor-->
+   
+  <div class="form-group"> 
+    <label class="col-md-4 control-label">Monitor</label>
+      <div class="col-md-4 selectContainer">
+      <div class="input-group">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+      <select name="monitor" class="form-control selectpicker" >
+        {% if item.monitor == 1 %}
+          <option >Yes</option>
+        {% else %}
+          <option >No</option>
+        {% endif %}
+      </select>
+    </div>
+  </div>
+  </div>
+
+  <!-- Description -->
+    
+  <div class="form-group">
+    <label class="col-md-4 control-label">Mô tả</label>
+      <div class="col-md-4 inputGroupContainer">
+      <div class="input-group">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+            <textarea class="form-control" name="descr" placeholder="Mô tả">{{item.descr}}</textarea>
+    </div>
+    </div>
+  </div>
+
+  <!-- Group -->
+  <div class="form-group"> 
+    <label class="col-md-4 control-label">Tên Group</br>(CTRL Có thể chọn nhiều group)</label>
+      <div class="col-md-4 selectContainer">
+      <div class="input-group">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+      <select name="group" class="form-control selectpicker" multiple="multiple">
+      <!--Hiển thị tên group mà profile thuộc-->
+      {% for group in groups %}
+        {% for x in group_checked %}
+          {% if group.id == x.0 %}
+            <option value="{{group.id}}" selected="selected">{{group.name}}</option>
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+      <!--profile không thuộc group này-->
+      {% for group in groups %}
+        <option value="{{group.id}}">{{group.name}}</option>
+      {% endfor %}
+      </select>
+    </div>
+  </div>
+  </div>
+
+  <!-- Active -->
+   <div class="form-group">
+      <label class="col-md-4 control-label">Active?</label>
+      <div class="col-md-4">
+        {% if item.active == 1 %}
+          <div class="radio">
+              <label>
+                  <input type="radio" name="active" value="yes" checked="checked" /> Yes
+              </label>
+          </div>
+          <div class="radio">
+              <label>
+                  <input type="radio" name="active" value="no" /> No
+              </label>
+          </div>
+        {% else %}
+          <div class="radio">
+              <label>
+                  <input type="radio" name="active" value="yes" /> Yes
+              </label>
+          </div>
+          <div class="radio">
+              <label>
+                  <input type="radio" name="active" value="no" checked="checked" /> No
+              </label>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+
+  <!-- Button -->
+  <div class="form-group">
+    <label class="col-md-4 control-label"></label>
+    <div class="col-md-4">
+      <button type="submit" class="btn btn-success" name="save" >Save <span class="glyphicon glyphicon-save"></span></button>
+    </div>
+  </div>
+  {% endfor %}
+  </fieldset>
+  </form>
+  </div>
+    </div><!-- /.container -->
+{% endblock %}

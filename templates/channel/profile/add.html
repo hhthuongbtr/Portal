@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row" width ="100%">
+
+  <form class="well form-horizontal" action="/channel/profile/add/" method="post"  id="contact_form">
+  {% csrf_token %}
+  <fieldset>
+
+  <!-- Form Name -->
+  <legend>Thêm Mới profile</legend>
+
+  <!-- Channel Name -->
+   
+  <div class="form-group"> 
+    <label class="col-md-4 control-label">Tên Channel</label>
+      <div class="col-md-4 selectContainer">
+      <div class="input-group">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+      <select name="channel" class="form-control selectpicker" >
+      {% for channel in channels %}
+        <option value="{{channel.id}}">{{channel.name}}</option>
+      {% endfor %}
+      </select>
+    </div>
+  </div>
+  </div>
+
+  <!-- IP-->
+
+  <div class="form-group">
+    <label class="col-md-4 control-label" >IP:</label> 
+      <div class="col-md-4 inputGroupContainer">
+      <div class="input-group">
+    <span class="input-group-addon"><i class="glyphicon glyphicon-hand-right"></i></span>
+    <input name="ip" placeholder="IP" class="form-control"  type="text">
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Name-->
+   
+  <div class="form-group"> 
+    <label class="col-md-4 control-label">Tên Profile</label>
+      <div class="col-md-4 selectContainer">
+      <div class="input-group">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+      <select name="profile" class="form-control selectpicker" >
+        <option >SD-300</option>
+        <option >SD-500</option>
+        <option >SD-1000</option>
+        <option >SD-2500</option>
+        <option >SD-TransIP</option>
+        <option >SD-Source</option>
+        <option >HD-500</option>
+        <option >HD-1000</option>
+        <option >HD-2000</option>
+        <option >HD-4000</option>
+        <option >HD-8000</option>
+        <option >HD-TransIP</option>
+        <option >HD-Source</option>
+        <option >SD-Khác</option>
+        <option >HD-Khác</option>
+      </select>
+    </div>
+  </div>
+  </div>
+
+
+  <!-- Protocol-->
+   
+  <div class="form-group"> 
+    <label class="col-md-4 control-label">Protocol</label>
+      <div class="col-md-4 selectContainer">
+      <div class="input-group">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+      <select name="protocol" class="form-control selectpicker" >
+        <option >udp</option>
+        <option >rmtp</option>
+      </select>
+    </div>
+  </div>
+  </div>
+
+
+  <!-- Monitor-->
+   
+  <div class="form-group"> 
+    <label class="col-md-4 control-label">Monitor</label>
+      <div class="col-md-4 selectContainer">
+      <div class="input-group">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+      <select name="monitor" class="form-control selectpicker" >
+        <option >Yes</option>
+        <option >No</option>
+      </select>
+    </div>
+  </div>
+  </div>
+
+  <!-- Description -->
+    
+  <div class="form-group">
+    <label class="col-md-4 control-label">Mô tả</label>
+      <div class="col-md-4 inputGroupContainer">
+      <div class="input-group">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+            <textarea class="form-control" name="descr" placeholder="Mô tả"></textarea>
+    </div>
+    </div>
+  </div>
+
+  <!-- Group -->
+  <div class="form-group"> 
+    <label class="col-md-4 control-label">Tên Group</br>(CTRL Có thể chọn nhiều group)</label>
+      <div class="col-md-4 selectContainer">
+      <div class="input-group">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+      <select name="group" class="form-control selectpicker" multiple="multiple">
+      <!--Hiển thị tên group-->
+      {% for group in groups %}
+            <option value="{{group.id}}">{{group.name}}</option>
+      {% endfor %}
+      </select>
+    </div>
+  </div>
+  </div>
+
+  <!-- Active -->
+   <div class="form-group">
+      <label class="col-md-4 control-label">Active?</label>
+      <div class="col-md-4">
+          <div class="radio">
+              <label>
+                  <input type="radio" name="active" value="yes" /> Yes
+              </label>
+          </div>
+          <div class="radio">
+              <label>
+                  <input type="radio" name="active" value="no" /> No
+              </label>
+          </div>
+      </div>
+    </div>
+
+
+  <!-- Button -->
+  <div class="form-group">
+    <label class="col-md-4 control-label"></label>
+    <div class="col-md-4">
+      <button type="submit" class="btn btn-success" name="save" >Save <span class="glyphicon glyphicon-save"></span></button>
+    </div>
+  </div>
+
+  </fieldset>
+  </form>
+  </div>
+    </div><!-- /.container -->
+{% endblock %}

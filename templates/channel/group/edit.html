@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row" width ="100%">
+        {% for item in group_data %}
+        <form action="/channel/group/edit/{{item.id}}/" method="POST" class="well form-horizontal">
+        {% csrf_token %}
+            <fieldset>
+                <div class="form-group">
+                    <label class="col-md-4 control-label" >Group name:</label>
+                    <div class="col-md-4 inputGroupContainer">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+                            <input type="text" width="100%" class="form-control" id="name" maxlength="255" name="name" value="{{ item.name }}">
+                        </div>
+                    </div>
+                </div>
+              <!-- Button -->
+                <div class="form-group">
+                <label class="col-md-4 control-label"></label>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-success" name="save">Save <span class="glyphicon glyphicon-save"></span></button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row" width ="100%">
+    <form action="/channel/add/" method="POST" class="well form-horizontal">
+    {% csrf_token %}
+        <fieldset>
+          <!-- Form Name -->
+          <legend>Thêm mới Channel</legend>
+            <!-- Channel name-->
+            <div class="form-group">
+                <label class="col-md-4 control-label">Tên Channel: </label>  
+                <div class="col-md-4 inputGroupContainer">
+                    <div class="input-group" width="100%">
+                        <span class="input-group-addon">
+                            <input type="checkbox" id="active" name="active"/>
+                        </span>
+                        <input type="text" width="100%" class="form-control" id="name" maxlength="255" name="name" value="{{ item.name }}" placeholder="Check to active new channel!">
+                    </div><!-- /input-group -->
+                </div><!-- inputGroupContainer -->
+            </div><!-- form-group -->
+            <!-- Channel description-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" >Description:</label> 
+                <div class="col-md-4 inputGroupContainer">
+                    <div width = "100%">
+                      <textarea id="descr" name="descr" rows="10" style="margin-top:  5px; width: 100%; height: 206px;"> 
+                      </textarea>
+                    </div>
+                </div><!-- inputGroupContainer -->
+            </div><!-- form-group -->
+          <!-- Button -->
+          <div class="form-group">
+            <label class="col-md-4 control-label"></label>
+            <div class="col-md-4">
+              <button type="submit" class="btn btn-success" name="save">Save <span class="glyphicon glyphicon-save"></span></button>
+            </div>
+          </div>
+        </fieldset>
+    </form>
+    </div>
+{% endblock %}

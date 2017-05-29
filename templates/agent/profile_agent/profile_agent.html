@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Portal</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script type="text/javascript" src="/static/angular.min.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
+    
+    
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap-theme.min.css">
+    
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    </script>
+
+    <style>
+        body {
+            padding-top: 60px;
+            padding-bottom: 60px;
+            font-size: 12.5px
+        }
+    </style>
+
+</head>
+<body id="docbody" ng-app="myApp" ng-controller="profile_agentCtrl">
+    {% block nav %}
+        {% include 'nav.html' %}
+    {% endblock %}
+
+  <div class="container"> 
+<!--Control-->
+    <div class="col-md-12"> 
+      <div class="row">
+        <table width="100%">
+          <tr>
+            <th>
+              Channel
+            </th>
+            <th>
+                Profile Type
+            </th>
+            <th>
+                Profile IP
+            </th>
+            <th>
+                Agent
+            </th>
+            <th>
+              Monitor
+            </th>
+            <th>
+              Analyzer
+            </th>
+            <th>
+              Status
+            </th>
+          </tr>
+          <tr>
+            <td>
+              <!-- Channel Name -->
+              <div class="form-group"> 
+                  <div class="input-group">
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                      <input type="text" name="channel_name" ng-model="channel_name" class="form-control">
+                </div>
+              </div>
+            </td>
+            <td>
+              <!-- profile type -->
+              <div class="form-group"> 
+                  <div class="input-group">
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                      <input type="text" name="profile" ng-model="type" class="form-control">
+
+                </div>
+              </div>
+            </td>
+            <td>
+              <!-- IP -->
+              <div class="form-group"> 
+                  <div class="input-group">
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                     <input type="text" name="ip" ng-model="ip" class="form-control">
+                </div>
+              </div>
+            </td>
+            <td>
+              <!-- Agent -->
+              <div class="form-group"> 
+                  <div class="input-group">
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+                      <select select ng-model="agent" class="form-control selectpicker" name="agent_id" required>
+                        <option value="">ALL</option>
+                        <option ng-repeat="agent in agents" value="{{'{{agent.name}'}}}">{{'{{agent.name}'}}}</option>
+                      </select>
+                </div>
+              </div>
+            </td>
+            <td>
+              <!-- Monitor -->
+              <div class="form-group"> 
+                  <div class="input-group">
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+                      <select select ng-model="monitor" class="form-control selectpicker" name="agent_id" required>
+                        <option value="">ALL</option>
+                        <option value="1">Yes</option>
+                        <option value="0">No</option>
+                      </select>
+                </div>
+              </div>
+            </td>
+            <td>
+              <!-- Analyxzer-->
+              <div class="form-group"> 
+                  <div class="input-group">
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+                      <select select ng-model="analyzer" class="form-control selectpicker" name="agent_id" required>
+                        <option value="">ALL</option>
+                        <option value="1">Yes</option>
+                        <option value="1">No</option>
+                      </select>
+                </div>
+              </div>
+            </td>
+            <td>
+              <!-- Status -->
+              <div class="form-group"> 
+                  <div class="input-group">
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+                      <select select ng-model="status" class="form-control selectpicker" name="agent_id" required>
+                        <option value="">ALL</option>
+                        <option value="1">OK</option>
+                        <option value="0">NoSource</option>
+                        <option value="2">NoVideo</option>
+                        <option value="3">NoAudio</option>
+                      </select>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </table>
+        <form action="/agent/monitor/control/" method="post" >
+          <table width="100%" ng-hide = "!{{ is_staff }}" ng-show = "{{is_staff}}">
+            <tr>
+              <td width="50%" align="left">
+                <input type="submit" name="btnmonitor" value="Monitor" class="btn btn-success btn-xs">
+                <input type="submit" name="btnnotmonitor" value="Not Monitor" class="btn btn-warning btn-xs">
+                <input type="submit" name="btnanalyzer" value="Analyzer" class="btn btn-success btn-xs">
+                <input type="submit" name="btnnotanalyzer" value="Not Analyzer" class="btn btn-warning btn-xs">
+              </td>
+              <td width="50%" align="right">
+                <input type="submit" name="btnadd" value="Add" class="btn btn-success btn-xs"> 
+                <input type="submit" name="btndelete" value="Delete" class="btn btn-danger btn-xs">
+              </td>
+            </tr>
+          </table> 
+  <!-- end control-->
+            <!--<div class="col-md-12">-->
+               <div class="table-responsive">
+                <table class="table table-bordered table-hover table-striped" style="display: block;height: 800px;overflow-y: scroll;">
+                  <thead>
+                    <tr>
+                      <th><input type="checkbox" ng-model="allprofileAgent" name="SellectAllProfileAgent" id="SellectAllProfileAgent"></th>
+                      <th>STT</th>
+                      <th>Channel</th>
+                      <th>Type</th>
+                      <th>Profile IP : Port</th>
+                      <th>Agent</th>
+                      <th>Status</th>
+                      <th title="Analyzer status">SttAnlz</th>
+                      <th title="Drop frame">Dfrm</th>
+                      <th title="Dropframe threshold">DFLim</th>
+                      <th title="Discontinuity">CCEror</th>
+                      <th title="Discontinuity threshold">CCELim</th>
+                      <th title="Monitor">Mnt</th>
+                      <th title="Anylazer">Alz</th>
+                      <th>Last update</th>
+                      <th ng-hide = "!{{ is_staff }}" ng-show = "{{is_staff}}"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat="item in myData | filter:{agent_name: agent} | filter:{channel_name: channel_name, type: type, ip: ip, monitor: monitor, anylyzer: analyzer, status: status}| startFrom:currentPage*pageSize | limitTo:pageSize">
+                      <td><input type="checkbox" ng-checked="allprofileAgent" name="SellectProfileAgent" id="SellectProfileAgent" value="{{'{{item.id}'}}}"></td>
+                      <td>{{'{{ $index + 1 }'}}}</td>
+                      <td>{{'{{item.channel_name}'}}}</td>
+                      <td>{{'{{item.type}'}}}</td>
+                      <td>{{'{{item.ip}'}}}</td>
+                      <td>{{'{{item.agent_name}'}}}</td>
+                      <td>
+                            <span ng-if='item.status === 0' style="color: red; font-size: 12px;">No source</span>
+                            <span ng-if='item.status === 1' style="color: green">OK</span>
+                            <span ng-if='item.status === 2' style="color: red; font-size: 12px;">No Video</span>
+                            <span ng-if='item.status === 3' style="color: red; font-size: 12px;">No Audio</span>
+                      </td>
+                      <td>
+                            <span style="color: green" ng-if ='item.status_anylyzer === 1'>OK</span>
+                            <span style="color: red" ng-if ='item.status_anylyzer === 0'>Unknow</span>
+                            <span style="color: green" ng-if ='item.status_anylyzer === 2'>rarNhe</span>
+                            <span style="color: green" ng-if ='item.status_anylyzer === 3'>ratVua</span>
+                            <span style="color: green" ng-if ='item.status_anylyzer === 4'>ratNang</span>
+                      </td>
+                      <td>{{'{{item.drop_frame}'}}}</td>
+                      <td>{{'{{item.dfLim}'}}}</td>
+                      <td>{{'{{item.cceror}'}}}</td>
+                      <td>{{'{{item.ccelim}'}}}</td>
+                      <td>
+                            <span style="color: green" ng-if ='item.monitor === 1'>Yes</span>
+                            <span style="color: red" ng-if ='item.monitor === 0'>No</span>
+                      </td>
+                      <td>
+                            <span style="color: green" ng-if ='item.anylyzer === 1'>Yes</span>
+                            <span style="color: red" ng-if ='item.anylyzer === 0'>No</span>
+                      </td>
+                      <td>{{'{{item.last_update}'}}}</td>
+                      <td ng-hide = "!{{ is_staff }}" ng-show = "{{is_staff}}">
+                        <a href="/agent/monitor/edit/{{'{{item.id}'}}}/"><span class="glyphicon glyphicon-edit" aria-hidden="true" title="edit"></span></a>
+                      </td>
+                    </tr>
+                  </tbody>
+                    <tr>
+                      <td colspan="16" class="text-center">---</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div><!--end of .table-responsive-->
+            </form>
+              <!-- pager -->
+              <div>
+                <button ng-click="currentPage = 0">
+                    First
+                </button>
+                <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
+                    Previous
+                </button>
+                {{'{{currentPage+1}'}}}/{{'{{numberOfPages()}'}}}
+                <button ng-disabled="currentPage >= numberOfPages() - 1" ng-click="currentPage=currentPage+1">
+                    Next
+                </button>
+                <button ng-click="currentPage=numberOfPages() -1">
+                    Last
+                </button>
+              </div>
+              <!-- end pager -->
+
+
+  </div><!-- /.container -->
+<script>
+var app = angular.module('myApp',[]);
+
+app.controller("profile_agentCtrl", function ($scope,$http,$timeout){
+  $scope.currentPage = 0;
+  $scope.pageSize = 300;
+
+  $scope.reload = function () {
+    $http.get('/agent/monitor/json/', {'params': $scope.params}).
+        then(function (response) {
+            $scope.myData = null;
+            $scope.myData = response.data.profile_agent;
+            console.log($scope.myData);
+      });
+    $http.get('/agent/json/').
+        then(function (agent_response) {
+            $scope.agents = agent_response.data.agents;
+            console.log($scope.agents);
+      });
+  $scope.numberOfPages=function(){
+        return Math.ceil($scope.myData.length/$scope.pageSize);                
+    }
+
+
+    $timeout(function(){
+      $scope.reload();
+    },120000)
+  };
+  $scope.reload();
+});
+
+app.filter('startFrom', function() {
+    return function(input, start) {
+        start = +start; //parse to int
+        return input.slice(start);
+    }
+});
+</script>
+</body>
+</html>
+

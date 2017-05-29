@@ -1,0 +1,17 @@
+<td>{{'{{ $index + 1 }'}}}</td>
+<!--<td><input type="checkbox" name="channel" value="{{'{{item.id}'}}}"></td>-->
+<td>{{'{{item.id}'}}}</td>
+<td>{{'{{item.name}'}}}</td>
+<td>{{'{{item.descr}'}}}</td>
+<td>
+  <span style="color: #1abc9c" ng-if ='item.active === 1'>Active</span>
+  <span style="color: red" ng-if ='item.active === 0'>Deactive</span>
+</td>
+<td>
+  <a href="/channel/edit/{{'{{item.id}'}}}/"> <span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+  |
+  <a href="/channel/delete/{{'{{item.id}'}}}/"> <span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+    |
+    <a href="/channel/deactive/{{'{{item.id}'}}}/" ng-if = 'item.active === 1'> <span class="glyphicon glyphicon-off" aria-hidden="true"></span></a>
+    <a href="/channel/active/{{'{{item.id}'}}}/" ng-if = 'item.active === 0'> <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
+</td>

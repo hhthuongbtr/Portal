@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Portal</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script type="text/javascript" src="/static/angular.min.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
+    
+    
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap-theme.min.css">
+    
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    </script>
+
+    <style>
+        body {
+            padding-top: 60px;
+            padding-bottom: 60px;
+        }
+    </style>
+
+</head>
+<body id="docbody" ng-app="myApp" ng-controller="add_monitorCtrl">
+    {% block nav %}
+        {% include 'nav.html' %}
+    {% endblock %}
+
+  <div class="container">   
+        <div class="row">
+
+      <form class="form-horizontal" action="/channel/group/{{group_id}}/add/" method="post"  id="contact_form">
+      {% csrf_token %}
+      <fieldset>
+
+      <!-- Form Name -->
+      <legend>Thêm Mới profile cho group.</legend>
+
+        <!-- Search -->
+       
+      <div class="form-group"> 
+        <label class="col-md-4 control-label">Search</label>
+        <div class="col-md-5 table-responsive">
+          <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+            <input type="text" name="search" ng-model="search" class="form-control">
+          </div>
+        </div>
+      </div>
+
+        <!-- Profile Name -->
+       
+      <div class="form-group"> 
+        <label class="col-md-4 control-label">Profile</label>
+        <div class="col-md-5 table-responsive">
+          <table class="table table-bordered table-hover" style="display: block;height: 300px;overflow-y: scroll; font-size: 12px">
+            <thead>
+              <tr>
+                <th><input type="checkbox" ng-model="allprofile" name="SellectAllProfile" id="SellectAllProfile"></th>
+                <th>STT</th>
+                <th>Channel</th>
+                <th>Type</th>
+                <th>IP</th>
+                <th>Active</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="profile in profiles | filter: search">
+                <td><input type="checkbox" ng-checked="allprofile" name="SellectProfile" id="SellectProfile" value="{{'{{profile.id}'}}}"></td>
+                <td>{{'{{$index +1}'}}}</td>
+                <td>{{'{{profile.channel_name}'}}}</td>
+                <td>{{'{{profile.type}'}}}</td>
+                <td>{{'{{profile.ip}'}}}</td>
+                <td>
+                    <span ng-if = "profile.active === 1" style="color: green">Yes</span>
+                    <span ng-if = "profile.active === 0" style="color: blue">No</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Button -->
+      <div class="form-group">
+        <label class="col-md-4 control-label"></label>
+        <div class="col-md-5">
+          <button type="submit" class="btn btn-success" name="save" >Save <span class="glyphicon glyphicon-save"></span></button>
+        </div>
+      </div>
+
+      </fieldset>
+      </form>
+      </div>
+  </div><!-- /.container -->
+<script>
+
+var app = angular.module('myApp',[]);
+
+app.controller("add_monitorCtrl", function ($scope,$http){
+
+  $scope.reload = function () {
+    $http.get('/channel/profile/json/').
+        then(function (response1) {
+            $scope.profiles = response1.data.profile;
+            console.log($scope.profiles);
+      });
+  };
+  $scope.reload();
+});
+</script>
+</body>
+</html>

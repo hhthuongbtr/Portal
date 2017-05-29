@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Portal</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script type="text/javascript" src="/static/angular.min.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
+    
+    
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap-theme.min.css">
+    
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    </script>
+
+    <style>
+        body {
+            padding-top: 60px;
+            padding-bottom: 60px;
+        }
+    </style>
+
+</head>
+<body id="docbody" ng-app="myApp" ng-controller="channelCtrl">
+    {% block nav %}
+        {% include 'nav.html' %}
+    {% endblock %}
+
+  <div class="container">   
+<!--Control-->
+      <div class="row">
+        <table width="100%">
+          <tr>
+            <th>
+              Name
+            </th>
+            <th>
+              Description
+            </th>
+            <th>
+              Status
+            </th>
+          </tr>
+          <tr>
+            <td>
+              <!-- Name -->
+              <div class="form-group"> 
+                  <div class="input-group">
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                      <input type="text" name="name" ng-model="name" class="form-control">
+                </div>
+              </div>
+            </td>
+
+            <td>
+              <!-- IP -->
+              <div class="form-group"> 
+                  <div class="input-group">
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                     <input type="text" name="description" ng-model="description" class="form-control">
+                </div>
+              </div>
+            </td>
+            <td>
+              <!-- Status -->
+
+              <div class="form-group"> 
+                  <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+                    <select name="status" class="form-control selectpicker"  ng-model="status" >
+                      <option value="1">Active</option>
+                      <option value="0">Deactive</option>
+                    </select>
+                </div>
+              </div>
+            </td>
+
+          </tr>
+        </table>
+        <form action="/channel/control/" method="post" >
+          <table width="100%" ng-hide = "!{{ is_staff }}">
+            <tr>
+              <td width="50%" align="left">
+                <input type="submit" name="btnactive" value="Active" class="btn btn-success btn-xs">
+                <input type="submit" name="btndeactive" value="Deactive" class="btn btn-warning btn-xs">
+              </td>
+              <td width="50%" align="right">
+                <!--<a href="/channel/add/">Add<span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a> -->
+                <input type="submit" name="btnadd" value="Add" class="btn btn-success btn-xs">
+                <input type="submit" name="btndelete" value="Delete" class="btn btn-danger btn-xs">
+              </td>
+            </tr>
+          </table>
+
+<!--end control-->
+                 <div class="table-responsive">
+                  <table class="table table-bordered table-hover table-striped">
+                    <thead>
+                      <tr>
+                        <th><input type="checkbox" ng-model="allChannel" name="SellectAllChannel" id="SellectAllChannel"></th>
+                        <th>STT</th>
+                        <th>ID</th>
+                        <th>Tên kênh</th>
+                        <th>Mô tả</th>
+                        <th>Trạng thái</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr ng-repeat="item in myData | filter:{name: name, descr: description, active: status} | startFrom:currentPage*pageSize | limitTo:pageSize">
+                        <td><input type="checkbox" ng-checked="allChannel" name="sellectChannel" id="sellectChannel" value="{{'{{item.id}'}}}"></td>
+                        <td>{{'{{ $index + 1 }'}}}</td>
+                        <td>{{'{{item.id}'}}}</td>
+                        <td>{{'{{item.name}'}}}</td>
+                        <td>{{'{{item.descr}'}}}</td>
+                        <td>
+                          <span style="color: #1abc9c" ng-if ='item.active === 1'>Active</span>
+                          <span style="color: red" ng-if ='item.active === 0'>Deactive</span>
+                        </td>
+                        <td ng-hide = "!{{ is_staff }}" ng-show = "{{is_staff}}">
+                          <a href="/channel/edit/{{'{{item.id}'}}}/"><span class="glyphicon glyphicon-edit" aria-hidden="true" title="edit"></span></a>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="6" class="text-center">---</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div><!--end of .table-responsive-->
+        </form>
+              <!-- pager -->
+              <div>
+                <button ng-click="currentPage = 0">
+                    First
+                </button>
+                <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
+                    Previous
+                </button>
+                {{'{{currentPage+1}'}}}/{{'{{numberOfPages()}'}}}
+                <button ng-disabled="currentPage >= numberOfPages() - 1" ng-click="currentPage=currentPage+1">
+                    Next
+                </button>
+                <button ng-click="currentPage=numberOfPages() -1">
+                    Last
+                </button>
+              </div>
+              <!-- end pager -->
+  </div><!-- /.container -->
+<script>
+var app = angular.module('myApp',[]);
+
+app.controller("channelCtrl", function ($scope,$http,$timeout){
+  $scope.currentPage = 0;
+  $scope.pageSize = 50;
+
+  $scope.reload = function () {
+    $http.get('/channel/json/').
+        then(function (response) {
+            $scope.myData = response.data.channels;
+            console.log($scope.myData);
+      });
+  $scope.numberOfPages=function(){
+        return Math.ceil($scope.myData.length/$scope.pageSize);                
+    }
+
+
+    $timeout(function(){
+      $scope.reload();
+    },120000)
+  };
+  $scope.reload();
+});
+app.filter('startFrom', function() {
+    return function(input, start) {
+        start = +start; //parse to int
+        return input.slice(start);
+    }
+});
+</script>
+</body>
+</html>
