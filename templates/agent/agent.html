@@ -29,178 +29,201 @@
         {% include 'nav.html' %}
     {% endblock %}
 
-  <div class="container">
-<!--Control-->
-    <div class="col-md-12"> 
-      <div class="row">
-        <table width="100%">
-          <tr>
-            <th>
-              Name
-            </th>
-            <th>
-              IP
-            </th>
-          </tr>
-          <tr>
-            <td>
-              <!-- Name -->
-              <div class="form-group"> 
-                  <div class="input-group">
-                      <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
-                      <input type="text" name="name" ng-model="name" class="form-control">
-                </div>
+<div class="container">
+  <!--Control-->
+  <div class="col-md-12">
+    <div class="row">
+      <table width="100%">
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            IP
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <!-- Name -->
+            <div class="form-group">
+              <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                <input type="text" name="name" ng-model="name" class="form-control">
               </div>
+            </div>
+          </td>
+          <td>
+            <!-- IP -->
+            <div class="form-group">
+              <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                <input type="text" name="ip" ng-model="ip" class="form-control">
+              </div>
+            </div>
+          </td>
+        </tr>
+      </table>
+      <form action="/agent/control/" method="post" >
+        <table width="100%" ng-hide = "!{{ is_staff }}" ng-show = "{{is_staff}}">
+          <tr>
+            <td width="50%" align="left">
+              <input type="submit" name="btnactive" value="Active" class="btn btn-success btn-xs">
+              <input type="submit" name="btndeactive" value="Deactive" class="btn btn-warning btn-xs">
             </td>
-
-            <td>
-              <!-- IP -->
-              <div class="form-group"> 
-                  <div class="input-group">
-                      <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
-                     <input type="text" name="ip" ng-model="ip" class="form-control">
-                </div>
-              </div>
+            <td width="50%" align="right">
+              <input type="submit" name="btnadd" value="Add" class="btn btn-success btn-xs">
+              <input type="submit" name="btndelete" value="Delete" class="btn btn-danger btn-xs">
             </td>
           </tr>
         </table>
-        <form action="/agent/control/" method="post" >
-          <table width="100%" ng-hide = "!{{ is_staff }}" ng-show = "{{is_staff}}">
-            <tr>
-              <td width="50%" align="left">
-                <input type="submit" name="btnactive" value="Active" class="btn btn-success btn-xs">
-                <input type="submit" name="btndeactive" value="Deactive" class="btn btn-warning btn-xs">
+        <!--end control-->
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover table-striped">
+            <thead>
+              <tr>
+                <th><input type="checkbox" ng-model="allAgent" name="SellectAllAgent" id="SellectAllAgent"></th>
+                <th>STT</th>
+                <th>Name</th>
+                <th>IP</th>
+                <th>Description</th>
+                <th>Thread</th>
+                <th>CPU</th>
+                <th>RAM</th>
+                <th>Disk</th>
+                <th>Active</th>
+                <th>Last Update</th>
+                <th ng-hide = "!{{ is_staff }}" ng-show = "{{is_staff}}"></th>
+                <th>SNMP</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="item in myData | filter:{name: name, ip: ip} | startFrom:currentPage*pageSize | limitTo:pageSize">
+                <td><input type="checkbox" ng-checked="allAgent" name="SellectAgent" id="SellectAgent" value="{{'{{item.id}'}}}"></td>
+                <td>{{'{{$index + 1}'}}}</td>
+                <td>{{'{{item.name}'}}}</td>
+                <td>{{'{{item.ip}'}}}</td>
+                <td>{{'{{item.descr}'}}}</td>
+                <td>{{'{{item.thread}'}}}</td>
               </td>
-              <td width="50%" align="right">
-                <input type="submit" name="btnadd" value="Add" class="btn btn-success btn-xs"> 
-                <input type="submit" name="btndelete" value="Delete" class="btn btn-danger btn-xs">
+              <td>
+                <div class="progress" ng-if ='item.cpu < 70'>
+                  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{'{{item.cpu}'}}}%" aria-valuemin="0" aria-valuemax="100" style="width:{{'{{item.cpu}'}}}%">
+                    <span style="color: black;">{{'{{item.cpu}'}}}%</span>
+                  </div>
+                </div>
+                <div class="progress" ng-if ='item.cpu >= 70'>
+                  <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="{{'{{item.cpu}'}}}%" aria-valuemin="0" aria-valuemax="100" style="width:{{'{{item.cpu}'}}}%">
+                    {{'{{item.cpu}'}}}%
+                  </div>
+                </div>
               </td>
+              <td>
+                <div class="progress" ng-if ='item.ram < 70'>
+                  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{'{{item.ram}'}}}%" aria-valuemin="0" aria-valuemax="100" style="width:{{'{{item.ram}'}}}%">
+                    <span style="color: black;">{{'{{item.ram}'}}}%</span>
+                  </div>
+                </div>
+                <div class="progress" ng-if ='item.ram >= 70'>
+                  <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="{{'{{item.ram}'}}}%" aria-valuemin="0" aria-valuemax="100" style="width:{{'{{item.ram}'}}}%">
+                    {{'{{item.ram}'}}}%
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="progress" ng-if ='item.disk < 70'>
+                  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{'{{item.disk}'}}}%" aria-valuemin="0" aria-valuemax="100" style="width:{{'{{item.disk}'}}}%">
+                    <span style="color: black;">{{'{{item.disk}'}}}%</span>
+                  </div>
+                </div>
+                <div class="progress" ng-if ='item.disk >= 70'>
+                  <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="{{'{{item.disk}'}}}%" aria-valuemin="0" aria-valuemax="100" style="width:{{'{{item.disk}'}}}%">
+                    {{'{{item.disk}'}}}%
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span style="color: green" ng-if ='item.active === 1'>Yes</span>
+                <span style="color: red" ng-if ='item.active === 0'>No</span>
+              </td>
+              <td>
+                {{'{{item.last_update}'}}}
+              </td>
+              <td ng-hide = "!{{ is_staff }}" ng-show = "{{is_staff}}">
+                <a href="/agent/edit/{{'{{item.id}'}}}/"><span class="glyphicon glyphicon-edit" aria-hidden="true" title="edit"></span></a>
+              </td>
+              <!-- SNMP -->
+              <td>
+                <div style="background-color: green" ng-if ='!is_critical(item.last_update) && item.active === 1'>
+                  OK
+                </div>
+                <div style="background-color: yellow" ng-if ='is_critical(item.last_update) && item.active === 0'>
+                  Warning
+                </div>
+                <div style="background-color: red" ng-if ='is_critical(item.last_update) && item.active == 1'>
+                  Critical
+                </div>
+              </td>
+              <!--end SNMP -->
             </tr>
-          </table>
-<!--end control-->
-               <div class="table-responsive">
-                <table class="table table-bordered table-hover table-striped">
-                  <thead>
-                    <tr>
-                      <th><input type="checkbox" ng-model="allAgent" name="SellectAllAgent" id="SellectAllAgent"></th>
-                      <th>STT</th>
-                      <th>Name</th>
-                      <th>IP</th>
-                      <th>Description</th>
-                      <th>Thread</th>
-                      <th>CPU</th>
-                      <th>RAM</th>
-                      <th>Disk</th>
-                      <th>Active</th>
-                      <th>Last Update</th>
-                      <th ng-hide = "!{{ is_staff }}" ng-show = "{{is_staff}}"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr ng-repeat="item in myData | filter:{name: name, ip: ip} | startFrom:currentPage*pageSize | limitTo:pageSize">
-                      <td><input type="checkbox" ng-checked="allAgent" name="SellectAgent" id="SellectAgent" value="{{'{{item.id}'}}}"></td>
-                      <td>{{'{{$index + 1}'}}}</td>
-                      <td>{{'{{item.name}'}}}</td>
-                      <td>{{'{{item.ip}'}}}</td>
-                      <td>{{'{{item.descr}'}}}</td>
-                      <td>{{'{{item.thread}'}}}</td>
-                      </td>
-                      <td>
-                            <div class="progress" ng-if ='item.cpu < 70'>
-                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{'{{item.cpu}'}}}%" aria-valuemin="0" aria-valuemax="100" style="width:{{'{{item.cpu}'}}}%">
-                                    <span style="color: black;">{{'{{item.cpu}'}}}%</span>
-                                </div>
-                            </div> 
-                            <div class="progress" ng-if ='item.cpu >= 70'>
-                                <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="{{'{{item.cpu}'}}}%" aria-valuemin="0" aria-valuemax="100" style="width:{{'{{item.cpu}'}}}%">
-                                    {{'{{item.cpu}'}}}%
-                                </div>
-                            </div> 
-                      </td>
-                      <td>
-                            <div class="progress" ng-if ='item.ram < 70'>
-                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{'{{item.ram}'}}}%" aria-valuemin="0" aria-valuemax="100" style="width:{{'{{item.ram}'}}}%">
-                                    <span style="color: black;">{{'{{item.ram}'}}}%</span>
-                                </div>
-                            </div> 
-                            <div class="progress" ng-if ='item.ram >= 70'>
-                                <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="{{'{{item.ram}'}}}%" aria-valuemin="0" aria-valuemax="100" style="width:{{'{{item.ram}'}}}%">
-                                    {{'{{item.ram}'}}}%
-                                </div>
-                            </div> 
-                      </td>
-                      <td>
-                            <div class="progress" ng-if ='item.disk < 70'>
-                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{'{{item.disk}'}}}%" aria-valuemin="0" aria-valuemax="100" style="width:{{'{{item.disk}'}}}%">
-                                    <span style="color: black;">{{'{{item.disk}'}}}%</span>
-                                </div>
-                            </div> 
-                            <div class="progress" ng-if ='item.disk >= 70'>
-                                <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="{{'{{item.disk}'}}}%" aria-valuemin="0" aria-valuemax="100" style="width:{{'{{item.disk}'}}}%">
-                                    {{'{{item.disk}'}}}%
-                                </div>
-                            </div> 
-                      </td>
-                      <td>
-                            <span style="color: green" ng-if ='item.active === 1'>Yes</span>
-                            <span style="color: red" ng-if ='item.active === 0'>No</span>
-                      </td>
-                      <td>{{'{{item.last_update}'}}}</td>
-                      <td ng-hide = "!{{ is_staff }}" ng-show = "{{is_staff}}">
-                        <a href="/agent/edit/{{'{{item.id}'}}}/"><span class="glyphicon glyphicon-edit" aria-hidden="true" title="edit"></span></a>
-                      </td>
-                    </tr>
-                  </tbody>
-                    <tr>
-                      <td colspan="11" class="text-center">---</td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div><!--end of .table-responsive-->
-              </form>
-            </div>
-        </div>
-              <!-- pager -->
-              <div>
-                <button ng-click="currentPage = 0">
-                    First
-                </button>
-                <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
-                    Previous
-                </button>
-                {{'{{currentPage+1}'}}}/{{'{{numberOfPages()}'}}}
-                <button ng-disabled="currentPage >= numberOfPages() - 1" ng-click="currentPage=currentPage+1">
-                    Next
-                </button>
-                <button ng-click="currentPage=numberOfPages() -1">
-                    Last
-                </button>
-              </div>
-              <!--end pager -->
+          </tbody>
+          <tr>
+            <td colspan="13" class="text-center">---</td>
+          </tr>
+          </tfoot>
+        </table>
+        </div><!--end of .table-responsive-->
+      </form>
+    </div>
+  </div>
+  <!-- pager -->
+  <div>
+    <button ng-click="currentPage = 0">
+    First
+    </button>
+    <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
+    Previous
+    </button>
+    {{'{{currentPage+1}'}}}/{{'{{numberOfPages()}'}}}
+    <button ng-disabled="currentPage >= numberOfPages() - 1" ng-click="currentPage=currentPage+1">
+    Next
+    </button>
+    <button ng-click="currentPage=numberOfPages() -1">
+    Last
+    </button>
+  </div>
+  <!--end pager -->
   </div><!-- /.container -->
 <script>
 var app = angular.module('myApp',[]);
-
 app.controller("agentCtrl", function ($scope,$http,$timeout){
-  $scope.currentPage = 0;
-  $scope.pageSize = 50;
-
+  $scope.CurrentDate = new Date();
   $scope.reload = function () {
     $http.get('/agent/json/').
         then(function (response) {
             $scope.myData = response.data.agents;
       });
-
     $timeout(function(){
       $scope.reload();
     },120000)
   };
   $scope.numberOfPages=function(){
         return Math.ceil($scope.myData.length/$scope.pageSize);                
+    };
+  $scope.is_critical=function(str){
+    $scope.CurrentDate = new Date();
+    $scope.UpdateDate = new Date(str);
+    $scope.CurrentDateMinute = $scope.CurrentDate.getMinutes() * $scope.CurrentDate.getHours() + $scope.CurrentDate.getDay() * $scope.CurrentDate.getMonth() * $scope.CurrentDate.getFullYear();
+    $scope.UpdateDateMinute = $scope.UpdateDate.getMinutes() * $scope.UpdateDate.getHours() + $scope.UpdateDate.getDay() * $scope.UpdateDate.getMonth() * $scope.UpdateDate.getFullYear();
+    $scope.MinusMinute = $scope.CurrentDateMinute - $scope.UpdateDateMinute;
+    if ($scope.MinusMinute > 5 || $scope.MinusMinute < 0){
+      return true; 
     }
+    else{
+      return false;
+    }               
+  };
   $scope.reload();
 });
-
 app.filter('startFrom', function() {
     return function(input, start) {
         start = +start; //parse to int
