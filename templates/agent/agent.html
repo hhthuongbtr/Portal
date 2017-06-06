@@ -92,8 +92,8 @@
                 <th>Disk</th>
                 <th>Active</th>
                 <th>Last Update</th>
-               <!-- <th>Test Date</th>-->
                 <th ng-hide = "!{{ is_staff }}" ng-show = "{{is_staff}}"></th>
+                <th>SNMP</th>
               </tr>
             </thead>
             <tbody>
@@ -146,21 +146,31 @@
                 <span style="color: red" ng-if ='item.active === 0'>No</span>
               </td>
               <td>
-                <span style="background-color: green" ng-if ='string_to_date(item.last_update)' title="Agent snmp ok!">{{'{{item.last_update}'}}}</span>
-                <span style="background-color: red" ng-if ='!string_to_date(item.last_update)' title="Critical! check agent snmp!">{{'{{item.last_update}'}}}</span>
+                {{'{{item.last_update}'}}}
               </td>
               <td ng-hide = "!{{ is_staff }}" ng-show = "{{is_staff}}">
                 <a href="/agent/edit/{{'{{item.id}'}}}/"><span class="glyphicon glyphicon-edit" aria-hidden="true" title="edit"></span></a>
               </td>
-              <!-- test date
+              <!-- SNMP -->
               <td>
-                {{'{{string_to_date(item.last_update)}'}}}
+                <div style="background-color: green" ng-if ='!is_critical(item.last_update) && item.active === 1'>
+                  OK
+                </div>
+                <div style="background-color: yellow" ng-if ='!is_critical(item.last_update) && item.active === 0'>
+                  Warning
+                </div>
+                <div style="background-color: yellow" ng-if ='is_critical(item.last_update) && item.active === 0'>
+                  Warning
+                </div>
+                <div style="background-color: red" ng-if ='is_critical(item.last_update) && item.active == 1'>
+                  Critical
+                </div>
               </td>
-               end test date -->
+              <!--end SNMP -->
             </tr>
           </tbody>
           <tr>
-            <td colspan="11" class="text-center">---</td>
+            <td colspan="13" class="text-center">---</td>
           </tr>
           </tfoot>
         </table>
@@ -188,16 +198,14 @@
   </div><!-- /.container -->
 <script>
 var app = angular.module('myApp',[]);
-
 app.controller("agentCtrl", function ($scope,$http,$timeout){
-  $scope.CurrentDate = new Date();
-
+  $scope.currentPage = 0;
+  $scope.pageSize = 50;
   $scope.reload = function () {
     $http.get('/agent/json/').
         then(function (response) {
             $scope.myData = response.data.agents;
       });
-
     $timeout(function(){
       $scope.reload();
     },120000)
@@ -205,21 +213,23 @@ app.controller("agentCtrl", function ($scope,$http,$timeout){
   $scope.numberOfPages=function(){
         return Math.ceil($scope.myData.length/$scope.pageSize);                
     };
-  $scope.string_to_date=function(str){
+  $scope.date_to_number=function(d){
+    datee = new Date(d);
+    return datee.getTime();
+  };
+  $scope.is_critical=function(str){
     $scope.CurrentDate = new Date();
     $scope.UpdateDate = new Date(str);
-    $scope.MinusMinute = $scope.CurrentDate.getMinutes() - $scope.UpdateDate.getMinutes();
-    $scope.MinusHour = $scope.CurrentDate.getHours() - $scope.UpdateDate.getHours();
-    if ($scope.MinusMinute > 5 || $scope.MinusMinute < 0 || $scope.MinusHour < 0 || $scope.MinusHour > 1){
-      return false; 
+    $scope.MinusMinute = $scope.date_to_number($scope.CurrentDate) - $scope.date_to_number($scope.UpdateDate);
+    if ($scope.MinusMinute > 300000){
+      return true; 
     }
     else{
-      return true;
-    }               
+      return false;
+    }         
   };
   $scope.reload();
 });
-
 app.filter('startFrom', function() {
     return function(input, start) {
         start = +start; //parse to int
