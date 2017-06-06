@@ -126,7 +126,7 @@ def edit_agent(request, agent_id):
 			obj_agent.descr = request.POST.get('descr', '').strip()#Cut space
 			obj_agent.thread = request.POST.get('thread','').strip()
 			active = request.POST.get('active', '')
-			if active == 'yes':
+			if active == 'on':
 				obj_agent.active = 1
 			elif active == 'no':
 				obj_agent.active = 0
