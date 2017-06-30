@@ -151,7 +151,8 @@ def profile_agent_view(request):
 	return render_to_response('agent/profile_agent/profile_agent.html',user)
 
 def  profile_agent_view_json(request):
-	cmd = "SELECT pa.id,channel.name as channel_name, profile.type as profile_type,profile.ip as profile_ip, agent.id as agent_id, agent.ip as agent_ip,agent.name as agent_name,pa.status,pa.analyzer_status, pa.dropframe, pa.dropframe_threshold,pa.discontinuity,pa.discontinuity_threshold,pa.check, pa.monitor,pa.analyzer,from_unixtime(pa.last_update) as last_update FROM profile_agent as pa,profile,channel,agent where pa.profile_id=profile.id and pa.agent_id=agent.id and profile.channel_id=channel.id ORDER BY pa.status"
+	#cmd = "SELECT pa.id,channel.name as channel_name, profile.type as profile_type,profile.ip as profile_ip, agent.id as agent_id, agent.ip as agent_ip,agent.name as agent_name,pa.status,pa.analyzer_status, pa.dropframe, pa.dropframe_threshold,pa.discontinuity,pa.discontinuity_threshold,pa.check, pa.monitor,pa.analyzer,from_unixtime(pa.last_update) as last_update FROM profile_agent as pa,profile,channel,agent where pa.profile_id=profile.id and pa.agent_id=agent.id and profile.channel_id=channel.id ORDER BY pa.status"
+        cmd = "SELECT pa.id,channel.name as channel_name, profile.type as profile_type,profile.ip as profile_ip, agent.id as agent_id, agent.ip as agent_ip,agent.name as agent_name,pa.status,pa.analyzer_status, pa.dropframe, pa.dropframe_threshold,pa.discontinuity,pa.discontinuity_threshold,pa.check, pa.monitor,pa.analyzer,from_unixtime(pa.last_update) as last_update FROM profile_agent as pa,profile,channel,agent where pa.profile_id=profile.id and agent.active=1 and pa.agent_id=agent.id and profile.channel_id=channel.id ORDER BY pa.status"
 	profile_agent_list = my_custom_sql(cmd)
 	if len(profile_agent_list) <1:
 		return HttpResponse('<script>alert("No profile agent exist!")</script>')
@@ -248,15 +249,15 @@ def add_profile_agent(request):
 			if len(profiles) * len(agents) > 500:
 				return HttpResponse('<script>alert("Over load!")</script>')
 			for agent_id in agents:
-				print int(agent_id)
+				#print int(agent_id)
 				for profile_id in profiles:
-					print(profile_id)
+					#print(profile_id)
 					#Check monitoring exist
 					cmd = "select id from profile_agent where profile_id='" + profile_id + "' and agent_id='" + agent_id + "';"
 					resuft  = my_custom_sql(cmd)
-					print resuft
+					#print resuft
 					if len(resuft) < 1:
-						obj_profile_agent = ProfileAgent(profile_id = int(profile_id), agent_id = int(agent_id), status = 1, analyzer_status = 1, dropframe = 0, dropframe_threshold = dropframe, discontinuity = 0, discontinuity_threshold = cceror, check = 0, video = 1, audio = 1, monitor = 1, analyzer = anylyzer, last_update = last_update)
+						obj_profile_agent = ProfileAgent(profile_id = int(profile_id), agent_id = int(agent_id), status = 1, analyzer_status = 1, dropframe = 0, dropframe_threshold = dropframe, discontinuity = 0, discontinuity_threshold = cceror, check = 0, video = 1, audio = 1, monitor = monitor, analyzer = anylyzer, last_update = last_update)
 						msg = "user %s added monitor profile_id %s on host %s"%(request.user.username, profile_id, agent_id)
 						insert_log('monitor', "add", "", msg)
 						obj_profile_agent.save()
