@@ -198,9 +198,9 @@
                       <td>
                             <span style="color: green" ng-if ='item.status_anylyzer === 1'>OK</span>
                             <span style="color: red" ng-if ='item.status_anylyzer === 0'>Unknow</span>
-                            <span style="color: green" ng-if ='item.status_anylyzer === 2'>rarNhe</span>
-                            <span style="color: green" ng-if ='item.status_anylyzer === 3'>ratVua</span>
-                            <span style="color: green" ng-if ='item.status_anylyzer === 4'>ratNang</span>
+                            <span style="color: yellow" ng-if ='item.status_anylyzer === 2'>ratNhe</span>
+                            <span style="color: red" ng-if ='item.status_anylyzer === 3'>ratVua</span>
+                            <span style="color: red" ng-if ='item.status_anylyzer === 4'>ratNang</span>
                       </td>
                       <td>{{'{{item.drop_frame}'}}}</td>
                       <td>{{'{{item.dfLim}'}}}</td>

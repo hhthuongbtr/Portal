@@ -401,6 +401,7 @@ def edit_profile(request, profile_id):
 			obj_profile.channel_id =channel
 			obj_profile.ip = ip
 			obj_profile.profile = profile
+			obj_profile.protocol = protocol
 			obj_profile.descr = descr
 			obj_profile.monitor = monitor
 			obj_profile.active =active
