@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container" ng-app="app" ng-controller="WizardController">
+      <div class="row">
+        <h1>Add new event monitor</h1>
+        <div class="col-md-3">
+          <div class="panel panel-info">
+            <div class="panel-heading">Your choices</div>
+            <div class="panel-body">
+              <div class="list-group">
+                <button type="button" ng-class="{'active':currentStep == 1}" class="list-group-item" ng-click="gotoStep(1)">Event: <span class="badge">{{'{{monitor.event.name}'}}}</span></span</button>
+                <button type="button" ng-class="{'active':currentStep == 2}" class="list-group-item" ng-click="gotoStep(2)">Encoder: <span class="badge">{{'{{monitor.encoder.name}'}}}</span></button>
+                <button type="button" ng-class="{'active':currentStep == 3}" class="list-group-item" ng-click="gotoStep(3)">Service: <span class="badge">{{'{{monitor.service.name}'}}}</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-9">
+          <div id="wizard-container">
+            
+            <div id="wizard-step-container">
+              <ul class="nav nav-pills nav-justified">
+                <li ng-repeat="step in steps" ng-class="{'active':step.step == currentStep}"><a ng-click="gotoStep(step.step)" href="">{{'{{step.step}'}}}. {{'{{step.name}'}}}</a></li>
+              </ul>
+            </div>
+
+            <div id="wizard-content-container">
+              <ng-include src="getStepTemplate()"></ng-include>
+            </div>
+            
+            <div id="wizard-navigation-container">
+              <div class="pull-right">
+                <span class="btn-group">
+                  <button ng-disabled="currentStep <= 1" class="btn btn-default" name="previous" type="button" ng-click="gotoStep(currentStep - 1)"><i class="fa fa-arrow-left"></i> Previous step</button>
+                  <button ng-disabled="currentStep >= steps.length" class="btn btn-primary" name="next" type="button" ng-click="gotoStep(currentStep + 1)">Next step <i class="fa fa-arrow-right"></i></button>
+                </span>
+                <button ng-disabled="currentStep != steps.length" class="btn btn-success" name="next" type="button" ng-click="save()"> <i class="fa fa-floppy-o"></i> Save</button>
+              </div>
+            </div>
+
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  <script type="text/javascript">
+    var app = angular.module('app',[]);
+    app.controller("WizardController", function ($scope,$http,$timeout,$window){
+      $scope.loadData = function(){
+        $http.get("/event/api/standby/")
+        .then(function(response) {
+            $scope.event_list = response.data['event_standby_list'];
+            console.log($scope.event_list);
+        });
+
+        $http.get("/event/api/encoder/standby/")
+        .then(function(response) {
+            $scope.encoder_list = response.data['encoder_standby_list'];
+            console.log($scope.encoder_list);
+        });
+
+        $http.get("/event/api/service/standby/")
+        .then(function(response) {
+            $scope.service_list = response.data['service_check_standby_list'];
+            console.log($scope.service_list);
+        });
+
+      };
+
+      $scope.wizardController = function(){
+        $scope.currentStep = 1;
+        $scope.steps = [
+          {
+            step: 1,
+            name: "Select Event",
+            template: "step1.html"
+          },
+          {
+            step: 2,
+            name: "Select Encoder",
+            template: "step2.html"
+          },   
+          {
+            step: 3,
+            name: "Select Service Check",
+            template: "step3.html"
+          },             
+        ];
+        $scope.monitor = {};
+        $scope.data = {};
+      };
+
+      $scope.wizardController();
+      $scope.loadData();
+      //Functions
+      $scope.gotoStep = function(newStep) {
+        $scope.currentStep = newStep;
+      };
+
+      $scope.getStepTemplate = function(){
+        for (var i = 0; i < $scope.steps.length; i++) {
+              if ($scope.currentStep == $scope.steps[i].step) {
+                  return $scope.steps[i].template;
+              }
+          }
+      };
+      
+      $scope.save = function() {
+        $scope.data.event_id = $scope.monitor.event.id;
+        $scope.data.encoder_id = $scope.monitor.encoder.id;
+        $scope.data.service_check_id = $scope.monitor.service.id;
+        console.log($scope.data);
+        $http({
+            method : 'POST',
+            url : '/event/api/event_monitor/',
+            data : $scope.data
+        }).then(function(response){
+            if(response.status == 203){
+                $window.alert(response.data.detail);
+            }
+            else
+            if (response.status == 202){
+                $window.alert("successfully added new event monitor!");
+                $window.location.href='/event/monitor/';
+            }
+        });
+      };
+    })
+  </script>
+    {% endblock %}

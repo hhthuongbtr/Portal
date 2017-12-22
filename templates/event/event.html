@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+{% block content %}
+<script src="/static/ajax/libs/jquery/jquery-3.2.1.min.js"></script>
+<!-- <script type="text/javascript" src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js" ></script> -->
+<script src="/static/assets/js/multiple-select.js"></script>
+<link href="/static/assets/css/multiple-select.min.css" rel="stylesheet">
+<script type="text/javascript" src="/static/assets/js/moment.min.js"></script>
+<script type="text/javascript" src="/static/assets/js/bootstrap-datetimepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/static/assets/css/bootstrap-datetimepicker.min.css">
+<!-- Sroll table -->
+<script type="text/javascript" src="/static/assets/js/jquery.floatThead.min.js"></script>
+<div ng-app="EventApp" ng-controller="EventCtrl">
+    <div class="content">
+        <div class="table-responsive col-md-12">
+            <div class="col-md-12"><!-- Main event table -->
+            <div class="content">
+                <h2 class="sub-header">Event&nbsp;<button type="button" class="btn btn-success btn-xs" ng-click="add()"><span class="glyphicon glyphicon-plus"></span></button></h2>
+            </div>
+            <div class="" style="overflow-y: scroll;">
+                <table class="table table-bordered table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th class="col-md-1">#</th>
+                            <th class="col-md-3">Name</th>
+                            <th class="col-md-3">Location</th>
+                            <th class="col-md-1">Region</th>
+                            <th class="col-md-1">Start date</th>
+                            <th class="col-md-1">End date</th>
+                            <th class="col-md-1">Active</th>
+                            <th class="col-md-1">Options</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <td colspan="9" class="text-center">Total: {{'{{filterState.length}'}}}</td>
+                    </tr>
+                    </tfoot>
+                    <tbody class="rowlink">
+                        <tr ng-repeat="event in (event_list | orderBy:'-id') as filterState" >
+                            <td class="col-md-1" ng-click="moreInfor(event.id)">{{'{{event.id}'}}}</td>
+                            <td class="col-md-3" ng-click="moreInfor(event.id)">
+                                {{'{{event.name}'}}}
+                            </td>
+                            <td class="col-md-3" ng-click="moreInfor(event.id)">
+                                {{'{{event.location}'}}}
+                            </td>
+                            <td>
+                                {{'{{event.region}'}}}
+                            </td>
+                            <td class="col-md-1" ng-click="moreInfor(event.id)">
+                                {{'{{event.start_date}'}}}
+                            </td>
+                            <td class="col-md-1" ng-click="moreInfor(event.id)"><div>
+                                {{'{{event.end_date}'}}}
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-success btn-xs" ng-show = "event.active"><span class="glyphicon glyphicon-ok"></span></button>
+                                <button type="button" class="btn btn-warning btn-xs" ng-hide = "event.active"><span class="glyphicon glyphicon-remove"></span></button>
+                            </td>
+                            <td class="col-md-1">
+                                <button type="button" class="btn btn-danger btn-xs" ng-click="delete(event)">Delete <span class="glyphicon glyphicon-remove"></span></button>
+                                <button type="button" class="btn btn-info btn-xs" ng-click="edit(event)">Edit <span class="glyphicon glyphicon-edit"></span></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div><!-- End main event table -->
+        <!-- Modal -->
+            <!-- model add event -->
+            <div id="AddModal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form class="well form-horizontal" method="post">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" ng-hide="event.create_date">Add new event</h4>
+                                <h4 class="modal-title" ng-show="event.create_date">{{'{{event.name}'}}}</h4>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Name -->
+                                <div class="form-group" ng-hide="event.create_date">
+                                    <label class="col-md-3 control-label">Name</label>
+                                    <div class="col-md-9 selectContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                                            <input type="text" class="form-control" placeholder="Name of event" ng-model="event.name">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- start date -->
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">Start date</label>
+                                    <div class="col-md-9 inputGroupContainer">
+                                        <div class="input-group date" id="startDatePicker">
+                                            <input type="text" class="form-control" id="#startDate" ng-model="event.start_date">
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar">
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- end date -->
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">End date:</label>
+                                    <div class="col-md-9 inputGroupContainer">
+                                        <div class="input-group date" id="endDatePicker">
+                                            <input type="text" class="form-control" id="#endDate" ng-model="event.end_date">
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar">
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Location -->
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">Location:</label>
+                                    <div class="col-md-9 inputGroupContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                                            <textarea class="form-control" placeholder="123, Đường ABC, Phường D, Quận E" ng-model="event.location"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Region -->
+                                <div class="form-group">
+                                  <label class="col-md-3 control-label">Region</label>
+                                  <div class="col-md-9 selectContainer">
+                                    <div class="input-group">
+                                      <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+                                      <select class="form-control selectpicker" ng-model="event.region">
+                                        <option>HCM</option>
+                                        <option>HNI</option>
+                                      </select>
+                                    </div>
+                                  </div>
+                                </div>
+                                <!-- Active -->
+                                <div class="form-group">   
+                                    <label class="col-md-3 control-label"><input type="checkbox" ng-model = "event.active" ng-checked = "event.active">&nbsp;Active?</label>
+                                </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-info" ng-click="save()">Save <span class="glyphicon glyphicon-save"></span></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- End Modal -->
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+var app = angular.module('EventApp', []);
+app.controller('EventCtrl', function($scope, $http, $window) {
+    $scope.EditMode = false;
+    $scope.onload = function() {
+        $http.get("/event/api/")
+        .then(function(response) {
+            $scope.event_list = response.data['event_list'];
+            console.log($scope.event_list);
+        });
+    };
+    $scope.onload();
+    //edit
+    $scope.edit = function (field) {
+      $scope.event = field;
+      $('#AddModal').modal('show');
+    };
+    //end edit
+    //add
+    $scope.add = function () {
+      $scope.event = {'end_date': null, 'name': '', 'start_date': null, 'active': 1, 'region': 'HCM', 'location': '', 'active': true};
+      $('#AddModal').modal('show');
+    };
+    //end add
+    $scope.save = function() {
+        $scope.updateTime()
+        console.log($scope.event);
+        /*
+        if edit --> ID avilable --> put
+        else add new --> ID not available --> post
+        */
+        if ($scope.event.id){
+            $http({
+                method : 'PUT',
+                url : "/event/api/" + $scope.event.id.toString() + "/",
+                data : $scope.event
+            }).then(function(response){
+                if(response.status == 203){
+                    $window.alert(response.data.detail);
+                }
+                else
+                if (response.status == 202){
+                    $window.alert(response.data.detail);
+                    $scope.onload();
+                    $('#AddModal').modal('hide');
+                }
+            });
+        }
+        else{
+            $http({
+                method : 'POST',
+                url : '/event/api/',
+                data : $scope.event
+            }).then(function(response){
+                if(response.status == 203){
+                    $window.alert(response.data.detail);
+                }
+                else
+                if (response.status == 202){
+                    $window.alert(response.data.detail);
+                    $scope.onload();
+                    $('#AddModal').modal('hide');
+                }
+            });
+        }
+    };
+    // End edit event
+    //Delete
+    $scope.delete = function(event){
+        if (event.id)
+        {
+            if ($window.confirm("Please confirm! remove event "+event.name+"?")) {
+            $http({
+              method : 'DELETE',
+              url : "/event/api/" + event.id.toString() + "/",
+            }).then(function(response){
+              if(response.status == 203){
+                $window.alert(response.data.detail);
+              }
+              else
+                if (response.status == 204){
+                  $window.alert("Success!");
+                  $scope.onload();
+                }
+            });
+          }//end confirm
+        }
+    }
+    //Delete
+    // Password
+    //Check keypress is Enter
+    $scope.checkIfEnterKeyWasPressed = function($event){
+        var keyCode = $event.which || $event.keyCode;
+            if (keyCode === 13) {
+                $scope.save()
+        }
+    };
+    //update datetime
+
+    $scope.updateTime = function(){
+      var start_date = angular.element(document.getElementById("startDatePicker").firstElementChild)
+      $scope.event.start_date = start_date.val();
+      var end_date = angular.element(document.getElementById("endDatePicker").firstElementChild)
+      $scope.event.end_date = end_date.val();
+    };
+    //end update datetime
+});
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // start date
+        $('#startDatePicker').datetimepicker({
+            format: 'YYYY-MM-DD HH:mm:ss',
+            allowInputToggle: true,
+        useCurrent: true
+        });
+        // end date
+        $('#endDatePicker').datetimepicker({
+            format: 'YYYY-MM-DD HH:mm:ss',
+            allowInputToggle: true,
+        useCurrent: true
+        });
+    });
+</script>
+    {% endblock %}

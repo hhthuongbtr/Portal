@@ -6,8 +6,3 @@ def user_info(request):
     args['is_superuser'] = 'true' if request.user.is_superuser else 'false'
     args['is_staff'] =  'true' if request.user.is_staff else 'false'
     return args
-
-
-def check_auth(request):
-	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/accounts/login')

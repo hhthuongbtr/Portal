@@ -1,31 +1,78 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Sign in</title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap-theme.min.css">
-    <link href="/static/css/signin.css" rel="stylesheet">
+<html lang="en-us" >
+  <head>
+    <title>Log in | Django site admin</title>
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/base.css" />
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/login.css" />
+    <script type="text/javascript" src="/static/angular.min.js"></script>
+    <meta name="robots" content="NONE,NOARCHIVE" />
+  </head>
+  <body class=" login" ng-app="LoginApp" ng-controller="LoginCtrl">
+    <!-- Container -->
+    <div id="container">
+      <!-- Header -->
+      <div id="header">
+        <div id="branding">
+          
+          <h1 id="site-name"><a href="/accounts/login/">IPTV administration</a></h1>
+        </div>
+      </div>
+      <!-- END Header -->
+      <!-- Content -->
+      <div id="content" class="colM">
+        <div id="content-main">
 
-    <script type="text/javascript" scr="/static/bootstrap/js/jquery-2.1.4.js"></script>
-    <script type="text/javascript" scr="/static/bootstrap/js/bootstrap.min.js"></script>
-</head>
+          <form action="/accounts/login/" method="post" id="login-form">
+            <div class="form-row">
+              <label class="required" for="id_username">Username:</label>
+              <input autofocus="" id="id_username" maxlength="254" name="username" type="text" required ng-model="user.username" ng-keypress="checkIfEnterKeyWasPressed($event)"/>
+            </div>
+            <div class="form-row">
+              
+              <label class="required" for="id_password">Password:</label>
+              <input id="id_password" name="password" type="password" required ng-model="user.password" ng-keypress="checkIfEnterKeyWasPressed($event)"/>
+            </div>
+            <div class="submit-row">
+              <label>&nbsp;</label><input type="button" value="Log in" ng-click="login()"/>
+            </div>
+          </form>
+          <!-- <p>form = {{'{{user}'}}}</p> -->
+        </div>
+        
+        <br class="clear" />
+      </div>
+      <!-- END Content -->
+      <div id="footer"></div>
+    </div>
+    <!-- END Container -->
+  </body>
+<script type="text/javascript">
+  var app = angular.module('LoginApp', []);
+  app.controller('LoginCtrl', function($scope,$http,$window) {
+  //Check keypress is Enter
+  $scope.checkIfEnterKeyWasPressed = function($event){
+    var keyCode = $event.which || $event.keyCode;
+    if (keyCode === 13) {
+        $scope.login()
+    }
+  };
 
-<body>
-  <div class="container">
-    <form class="form-signin" action="/accounts/auth/" method="post">
-        {% csrf_token %}
-        <h2 class="form-signin-heading">Please sign in</h2>
-        <label for="username" class="sr-only">User name:</label>
-        <input type="text" name="username" value="" class="form-control" placeholder="User name" required autofocus>
-        <label for="password" class="sr-only">Password:</label>
-        <input type="password" name="password" class="form-control" placeholder="Password" required>
-        <input class="btn btn-lg btn-primary btn-block" type="submit" value="Sign in">
-    </form>
-
-  </div> <!-- /container -->
-</body>
+    $scope.login = function () {
+      // console.log($scope.user);
+      $http({
+        method : 'POST',
+        url : '/accounts/login/',
+        data : $scope.user
+      }).then(function(response){
+        if(response.status == 203){
+          $window.alert(response.data.detail);
+        }
+        else
+          if (response.status == 202){
+            $window.location.href='/channel/';
+          }
+      });
+    }; 
+  });
+</script>
 </html>

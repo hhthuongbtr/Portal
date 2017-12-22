@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% block content %}
+<script src="/static/ajax/libs/jquery/jquery-3.2.1.min.js"></script>
+<!-- <script type="text/javascript" src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js" ></script> -->
+<script src="/static/assets/js/multiple-select.js"></script>
+<link href="/static/assets/css/multiple-select.min.css" rel="stylesheet">
+<script type="text/javascript" src="/static/assets/js/moment.min.js"></script>
+<script type="text/javascript" src="/static/assets/js/bootstrap-datetimepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/static/assets/css/bootstrap-datetimepicker.min.css">
+<!-- Sroll table -->
+<script type="text/javascript" src="/static/assets/js/jquery.floatThead.min.js"></script>
+<div ng-app="EventMonitorApp" ng-controller="EventMonitorCtrl">
+    <div class="content">
+        <div class="table-responsive col-md-12">
+            <div class="col-md-12"><!-- Main event table -->
+            <div class="content">
+                <h2 class="sub-header">Event Monitor&nbsp;<button type="button" class="btn btn-success btn-xs" ng-click="add()"><span class="glyphicon glyphicon-plus"></span></button></h2>
+            </div>
+            <div class="" style="overflow-y: scroll;">
+                <table class="table table-bordered table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Event Name</th>
+                            <th>Encoder</th>
+                            <th>Date</th>
+                            <th>Encoder Config</th>
+                            <th>Service</th>
+                            <th>Pid</th>
+                            <th>Status</th>
+                            <th>Active</th>
+                            <th>Last Update</th>
+                            <th>Options</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <td colspan="13" class="text-center">Total: {{'{{filterState.length}'}}}</td>
+
+                                {{'{{monitor_list[0].name}'}}}
+                    </tr>
+                    </tfoot>
+                    <tbody class="rowlink">
+                        <tr ng-repeat="monitor in (monitor_list | orderBy:'-start_date') as filterState" >
+                            <td ng-click="moreInfor(monitor.id)">
+                                {{'{{ $index + 1 }'}}}
+                            </td>
+                            <td ng-click="moreInfor(monitor.id)">
+                                {{'{{monitor.event_name}'}}}
+                            </td>
+                            <td ng-click="moreInfor(monitor.id)">
+                                {{'{{monitor.encoder}'}}}
+                            </td>
+                            <td>
+                                Start date:&nbsp;{{'{{monitor.start_date*1000 | date:"dd-MM-yyyy HH:mm:ss"}'}}}
+                                </br>
+                                End date&nbsp;:&nbsp;{{'{{monitor.end_date*1000 | date:"dd-MM-yyyy HH:mm:ss"}'}}}
+                            </td>
+                            <td ng-click="moreInfor(monitor.id)"><div>
+                                IP monitor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{'{{monitor.ip_monitor}'}}}
+                                </br>
+                                Source main&nbsp;&nbsp;&nbsp;&nbsp;: {{'{{monitor.source_main}'}}}
+                                </br>
+                                Source backup: {{'{{monitor.source_backup}'}}}
+                            </td>
+                            <td ng-click="moreInfor(monitor.id)"><div>
+                                {{'{{monitor.service_check_name}'}}}
+                            </td>
+                            <td ng-click="moreInfor(monitor.id)"><div>
+                                {{'{{monitor.pid}'}}}
+                            </td>
+                            <td ng-click="moreInfor(monitor.id)"><div>
+                                {{'{{monitor.status}'}}}
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-success btn-xs" ng-show = "monitor.active"><span class="glyphicon glyphicon-ok"></span></button>
+                                <button type="button" class="btn btn-warning btn-xs" ng-hide = "monitor.active"><span class="glyphicon glyphicon-remove"></span></button>
+                            </td>
+                            <td ng-click="moreInfor(monitor.id)"><div>
+                                {{'{{monitor.last_update*1000 | date:"dd-MM-yyyy HH:mm:ss"}'}}}
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-xs" ng-click="delete(monitor)">Delete <span class="glyphicon glyphicon-remove"></span></button>
+                                <button type="button" class="btn btn-info btn-xs" ng-click="edit(monitor)">Edit <span class="glyphicon glyphicon-edit"></span></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div><!-- End main monitor table -->
+        <!-- Modal -->
+            <!-- model add monitor -->
+            <div id="AddModal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form class="well form-horizontal" method="post">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" ng-hide="monitor.create_date">Add new monitor</h4>
+                                <h4 class="modal-title" ng-show="monitor.create_date">{{'{{monitor.name}'}}}</h4>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Name -->
+                                <div class="form-group" ng-hide="monitor.create_date">
+                                    <label class="col-md-3 control-label">Name</label>
+                                    <div class="col-md-9 selectContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                                            <input type="text" class="form-control" placeholder="Name of monitor" ng-model="monitor.name">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- start date -->
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">Start date</label>
+                                    <div class="col-md-9 inputGroupContainer">
+                                        <div class="input-group date" id="startDatePicker">
+                                            <input type="text" class="form-control" id="#startDate" ng-model="monitor.start_date">
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar">
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- end date -->
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">End date:</label>
+                                    <div class="col-md-9 inputGroupContainer">
+                                        <div class="input-group date" id="endDatePicker">
+                                            <input type="text" class="form-control" id="#endDate" ng-model="monitor.end_date">
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar">
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Location -->
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">Location:</label>
+                                    <div class="col-md-9 inputGroupContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                                            <textarea class="form-control" placeholder="123, Đường ABC, Phường D, Quận E" ng-model="monitor.location"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Region -->
+                                <div class="form-group">
+                                  <label class="col-md-3 control-label">Region</label>
+                                  <div class="col-md-9 selectContainer">
+                                    <div class="input-group">
+                                      <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+                                      <select class="form-control selectpicker" ng-model="monitor.region">
+                                        <option>HCM</option>
+                                        <option>HNI</option>
+                                      </select>
+                                    </div>
+                                  </div>
+                                </div>
+                                <!-- Active -->
+                                <div class="form-group">   
+                                    <label class="col-md-3 control-label"><input type="checkbox" ng-model = "monitor.active" ng-checked = "monitor.active">&nbsp;Active?</label>
+                                </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-info" ng-click="save()">Save <span class="glyphicon glyphicon-save"></span></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- End Modal -->
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+var app = angular.module('EventMonitorApp', []);
+app.controller('EventMonitorCtrl', function($scope, $http, $window) {
+    $scope.EditMode = false;
+    $scope.onload = function() {
+        $http.get("/event/api/monitor/")
+        .then(function(response) {
+            $scope.monitor_list = response.data['monitor_list'];
+            console.log($scope.monitor_list);
+        });
+    };
+    $scope.onload();
+    //edit
+    $scope.edit = function (field) {
+      $scope.monitor = field;
+      $('#AddModal').modal('show');
+    };
+    //end edit
+    //add
+    $scope.add = function () {
+      $scope.monitor = {'end_date': null, 'name': '', 'start_date': null, 'active': 1, 'region': 'HCM', 'location': '', 'active': true};
+      $('#AddModal').modal('show');
+    };
+    //end add
+    $scope.save = function() {
+        console.log($scope.monitor);
+        /*
+        if edit --> ID avilable --> put
+        else add new --> ID not available --> post
+        */
+        if ($scope.monitor.id){
+            $http({
+                method : 'PUT',
+                url : "/event/api/monitor/" + $scope.monitor.id.toString() + "/",
+                data : $scope.monitor
+            }).then(function(response){
+                if(response.status == 203){
+                    $window.alert(response.data.detail);
+                }
+                else
+                if (response.status == 202){
+                    $window.alert(response.data.detail);
+                    $scope.onload();
+                    $('#AddModal').modal('hide');
+                }
+            });
+        }
+        else{
+            $http({
+                method : 'POST',
+                url : '/event/api/monitor/',
+                data : $scope.monitor
+            }).then(function(response){
+                if(response.status == 203){
+                    $window.alert(response.data.detail);
+                }
+                else
+                if (response.status == 202){
+                    $window.alert(response.data.detail);
+                    $scope.onload();
+                    $('#AddModal').modal('hide');
+                }
+            });
+        }
+    };
+    // End edit monitor
+    //Delete
+    $scope.delete = function(monitor){
+        if (monitor.id)
+        {
+            if ($window.confirm("Please confirm! remove monitor "+monitor.name+"?")) {
+            $http({
+              method : 'DELETE',
+              url : "/event/api/monitor/" + monitor.id.toString() + "/",
+            }).then(function(response){
+              if(response.status == 203){
+                $window.alert(response.data.detail);
+              }
+              else
+                if (response.status == 204){
+                  $window.alert("Success!");
+                  $scope.onload();
+                }
+            });
+          }//end confirm
+        }
+    }
+    //Delete
+    // Password
+    //Check keypress is Enter
+    $scope.checkIfEnterKeyWasPressed = function($monitor){
+        var keyCode = $monitor.which || $monitor.keyCode;
+            if (keyCode === 13) {
+                $scope.save()
+        }
+    };
+});
+</script>
+    {% endblock %}

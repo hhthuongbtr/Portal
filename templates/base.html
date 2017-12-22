@@ -1,41 +1,91 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Portal</title>
+<html lang="en">
+  <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/static/favicon.ico">
 
+    <title>Thomson</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/static/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="/static/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/static/dashboard.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/assets/css/jasny-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/static/assets/css/main.css">
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <!-- jQuery -->
+    <script src="/static/ajax/libs/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js" ></script>
+    
+    <script src="/static/assets/js/jasny-bootstrap.min.js"></script>
+    <script src="/static/assets/js/ie-emulation-modes-warning.js"></script>
+    
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- AngularJS -->
     <script type="text/javascript" src="/static/angular.min.js"></script>
-    <script type="text/javascript" src="/static/bootstrap/js/jquery-2.1.4.js"></script>
-    <script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
-	
-    
-    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap-theme.min.css">
-    
-    <link rel="stylesheet" type="text/css" href="/static/style.css">
-    </script>
+    <script src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.14.3.js"></script>
+    <!-- Custom css -->
+<!--     <link rel="stylesheet" type="text/css" href="/static/assets/css/jasny-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/static/assets/css/main.css"> -->
+    <!-- <script type="text/javascript" src="/static/assets/js/jasny-bootstrap.min.js"></script> -->
+  </head>
 
-    <style>
-        body {
-            padding-top: 60px;
-            padding-bottom: 60px;
-        }
-    </style>
+  <body>
+    <!-- navbar -->
+  {% block nav %}
+    {% include 'nav.html' %}
+  {% endblock %}
+  <!-- end navbar -->
+    <div class="container-fluid">
+      <div class="row">
 
-</head>
-<body id="docbody">
-  <div class="container">   
-    <div>
+
+    <div class="col-sm-12 col-md-12 main">
       {% block content %}
       {% endblock %}
     </div>
-  </div><!-- /.container -->
-  
-  <div class="container">  
-    <div>
-    </div><!-- /.footer -->
-  </div>
-</body>
+    <!-- end content -->
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script>window.jQuery || document.write('<script src="/static/assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="/static/dist/js/bootstrap.min.js"></script>
+    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+    <script src="/static/assets/js/vendor/holder.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/static/assets/js/ie10-viewport-bug-workaround.js"></script>
+ <!--  <script>
+  // var app = angular.module('DateTime',[]);
+  // app.controller("datetimeCtrl", function ($scope,$http,$timeout){
+  //   $scope.reload = function () {
+  //     $http.get('/system/api/datetime/').
+  //     then(function (response) {
+  //       $scope.date_time = response.data;
+  //       console.log($scope.date_time);
+  //     });
+  //     $timeout(function(){
+  //       $scope.reload();
+  //     },600000)
+  //   };
+  //   $scope.reload();
+  // });
+  </script> -->
+  </body>
 </html>

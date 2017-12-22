@@ -21,25 +21,19 @@ from accounts.views import *
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-	#==============================
-	# URL of Admin
-	#==============================
+    #==============================
+    # URL of Admin
+    #==============================
     url(r'^admin/', admin.site.urls),
     url(r'^$', channel_list),
-    url(r'^test/$', test_login),
 
     #==============================
     # URL of accounts
     #==============================
-    url(r'^accounts/login/$', auth_views.login, {'template_name': 'accounts/login.html'}),
-    url(r'^accounts/logout/$', logout_view),
-    url(r'^accounts/auth/$', auth_view),
-    url(r'^accounts/invalid/$', invalid_login),
-    url(r'^password/$', change_password, name='change_password'),
-
-	#==============================
-	# URL of channel
-	#==============================
+    url(r'^accounts/', include('accounts.urls')),
+    #==============================
+    # URL of channel
+    #==============================
     #url(r'^test$', test, name='test'),
     url(r'^channel/$', channel_list),
     url(r'^channel/json/$', channel_json),
@@ -99,6 +93,7 @@ urlpatterns = [
 
 
 	#==============================
-	# URL of log
+	# URL of event
 	#==============================
+    url(r'^event/', include('event.urls')),
 ]

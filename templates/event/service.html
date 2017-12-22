@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% block content %}
+<script src="/static/ajax/libs/jquery/jquery-3.2.1.min.js"></script>
+<!-- <script type="text/javascript" src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js" ></script> -->
+<script src="/static/assets/js/multiple-select.js"></script>
+<link href="/static/assets/css/multiple-select.min.css" rel="stylesheet">
+<script type="text/javascript" src="/static/assets/js/moment.min.js"></script>
+<script type="text/javascript" src="/static/assets/js/bootstrap-datetimepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/static/assets/css/bootstrap-datetimepicker.min.css">
+<!-- Sroll table -->
+<script type="text/javascript" src="/static/assets/js/jquery.floatThead.min.js"></script>
+<div ng-app="ServiceApp" ng-controller="ServiceCtrl">
+    <div class="content">
+        <div class="table-responsive col-md-12">
+            <div class="col-md-12"><!-- Main service table -->
+            <div class="content">
+                <h2 class="sub-header">Service&nbsp;<button type="button" class="btn btn-success btn-xs" ng-click="add()"><span class="glyphicon glyphicon-plus"></span></button></h2>
+            </div>
+            <div class="" style="overflow-y: scroll;">
+                <table class="table table-bordered table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th class="col-md-1">#</th>
+                            <th class="col-md-7">Name</th>
+                            <th class="col-md-1">Active</th>
+                            <th class="col-md-3">Options</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <td colspan="9" class="text-center">Total: {{'{{filterState.length}'}}}</td>
+                    </tr>
+                    </tfoot>
+                    <tbody class="rowlink">
+                        <tr ng-repeat="service in (service_list | orderBy:'-unix_timestamp') as filterState" >
+                            <td class="col-md-1" ng-click="moreInfor(service.id)">{{'{{service.id}'}}}</td>
+                            <td class="col-md-7" ng-click="moreInfor(service.id)">
+                                {{'{{service.name}'}}}
+                            </td>
+                            <td class="col-md-1">
+                                <button type="button" class="btn btn-success btn-xs" ng-show = "service.active"><span class="glyphicon glyphicon-ok"></span></button>
+                                <button type="button" class="btn btn-warning btn-xs" ng-hide = "service.active"><span class="glyphicon glyphicon-remove"></span></button>
+                            </td>
+                            <td class="col-md-3">
+                                <button type="button" class="btn btn-danger btn-xs" ng-click="delete(service)">Delete <span class="glyphicon glyphicon-remove"></span></button>
+                                <button type="button" class="btn btn-info btn-xs" ng-click="edit(service)">Edit <span class="glyphicon glyphicon-edit"></span></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div><!-- End main service table -->
+        <!-- Modal -->
+            <!-- model add service -->
+            <div id="AddModal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form class="well form-horizontal" method="post">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" ng-hide="service.create_date">Add new service</h4>
+                                <h4 class="modal-title" ng-show="service.create_date">{{'{{service.name}'}}}</h4>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Name -->
+                                <div class="form-group" ng-hide="service.create_date">
+                                    <label class="col-md-2 control-label">Name</label>
+                                    <div class="col-md-9 selectContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                                            <input type="text" class="form-control" placeholder="Name of service" ng-model="service.name">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Active -->
+                                <div class="form-group">   
+                                    <label class="col-md-4 control-label"><input type="checkbox" ng-model = "service.active" ng-checked = "service.active">&nbsp;Active?</label>
+                                </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-info" ng-click="save()">Save <span class="glyphicon glyphicon-save"></span></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- End Modal -->
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+var app = angular.module('ServiceApp', []);
+app.controller('ServiceCtrl', function($scope, $http, $window) {
+    $scope.EditMode = false;
+    $scope.onload = function() {
+        $http.get("/event/api/service/")
+        .then(function(response) {
+            $scope.service_list = response.data['service_check_list'];
+            console.log($scope.service_list);
+        });
+    };
+    $scope.onload();
+    //edit
+    $scope.edit = function (field) {
+      $scope.service = field;
+      $('#AddModal').modal('show');
+    };
+    //end edit
+    //add
+    $scope.add = function () {
+      $scope.service = {'name': '', 'active': true};
+      $('#AddModal').modal('show');
+    };
+    //end add
+    $scope.save = function() {
+        console.log($scope.service);
+        /*
+        if edit --> ID avilable --> put
+        else add new --> ID not available --> post
+        */
+        if ($scope.service.id){
+            $http({
+                method : 'PUT',
+                url : "/event/api/service/" + $scope.service.id.toString() + "/",
+                data : $scope.service
+            }).then(function(response){
+                if(response.status == 203){
+                    $window.alert(response.data.detail);
+                }
+                else
+                if (response.status == 202){
+                    $window.alert(response.data.detail);
+                    $scope.onload();
+                    $('#AddModal').modal('hide');
+                }
+            });
+        }
+        else{
+            console.log('POST');
+            $http({
+                method : 'POST',
+                url : '/event/api/service/',
+                data : $scope.service
+            }).then(function(response){
+                if(response.status == 203){
+                    $window.alert(response.data.detail);
+                }
+                else
+                if (response.status == 202){
+                    $window.alert(response.data.detail);
+                    $scope.onload();
+                    $('#AddModal').modal('hide');
+                }
+            });
+        }
+    };
+    // End edit service
+    //Delete
+    $scope.delete = function(service){
+        if (service.id)
+        {
+            if ($window.confirm("Please confirm! remove service "+service.name+"?")) {
+            $http({
+              method : 'DELETE',
+              url : "/event/api/service/" + service.id.toString() + "/",
+            }).then(function(response){
+              if(response.status == 203){
+                $window.alert(response.data.detail);
+              }
+              else
+                if (response.status == 204){
+                  $window.alert("Success!");
+                  $scope.onload();
+                }
+            });
+          }//end confirm
+        }
+    }
+    //Delete
+    // Password
+    //Check keypress is Enter
+    $scope.checkIfEnterKeyWasPressed = function($service){
+        var keyCode = $service.which || $service.keyCode;
+            if (keyCode === 13) {
+                $scope.save()
+        }
+    };
+});
+</script>
+    {% endblock %}

@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% block content %}
+<script src="/static/ajax/libs/jquery/jquery-3.2.1.min.js"></script>
+<!-- <script type="text/javascript" src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js" ></script> -->
+<script src="/static/assets/js/multiple-select.js"></script>
+<link href="/static/assets/css/multiple-select.min.css" rel="stylesheet">
+<script type="text/javascript" src="/static/assets/js/moment.min.js"></script>
+<script type="text/javascript" src="/static/assets/js/bootstrap-datetimepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/static/assets/css/bootstrap-datetimepicker.min.css">
+<!-- Sroll table -->
+<script type="text/javascript" src="/static/assets/js/jquery.floatThead.min.js"></script>
+<div ng-app="EncoderApp" ng-controller="EncoderCtrl">
+    <div class="content">
+        <div class="table-responsive col-md-12">
+            <div class="col-md-12"><!-- Main encoder table -->
+            <div class="content">
+                <h2 class="sub-header">Encoder&nbsp;<button type="button" class="btn btn-success btn-xs" ng-click="add()"><span class="glyphicon glyphicon-plus"></span></button></h2>
+            </div>
+            <div class="" style="overflow-y: scroll;">
+                <table class="table table-bordered table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th class="col-md-1">#</th>
+                            <th class="col-md-3">Name</th>
+                            <th class="col-md-2">Ip Monitor</th>
+                            <th class="col-md-2">Source Main</th>
+                            <th class="col-md-2">Source Backup</th>
+                            <th class="col-md-1">Active</th>
+                            <th class="col-md-1">Options</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <td colspan="9" class="text-center">Total: {{'{{filterState.length}'}}}</td>
+                    </tr>
+                    </tfoot>
+                    <tbody class="rowlink">
+                        <tr ng-repeat="encoder in (encoder_list | orderBy:'-unix_timestamp') as filterState" >
+                            <td class="col-md-1" ng-click="moreInfor(encoder.id)">{{'{{encoder.id}'}}}</td>
+                            <td class="col-md-3" ng-click="moreInfor(encoder.id)">
+                                {{'{{encoder.name}'}}}
+                            </td>
+                            <td class="col-md-2" ng-click="moreInfor(encoder.id)">
+                                {{'{{encoder.ip_monitor}'}}}
+                            </td>
+                            <td>
+                                {{'{{encoder.source_main}'}}}
+                            </td>
+                            <td class="col-md-2" ng-click="moreInfor(encoder.id)">
+                                {{'{{encoder.source_backup}'}}}
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-success btn-xs" ng-show = "encoder.active"><span class="glyphicon glyphicon-ok"></span></button>
+                                <button type="button" class="btn btn-warning btn-xs" ng-hide = "encoder.active"><span class="glyphicon glyphicon-remove"></span></button>
+                            </td>
+                            <td class="col-md-1">
+                                <button type="button" class="btn btn-danger btn-xs" ng-click="delete(encoder)">Delete <span class="glyphicon glyphicon-remove"></span></button>
+                                <button type="button" class="btn btn-info btn-xs" ng-click="edit(encoder)">Edit <span class="glyphicon glyphicon-edit"></span></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div><!-- End main encoder table -->
+        <!-- Modal -->
+            <!-- model add encoder -->
+            <div id="AddModal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form class="well form-horizontal" method="post">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" ng-hide="encoder.create_date">Add new Encoder</h4>
+                                <h4 class="modal-title" ng-show="encoder.create_date">{{'{{encoder.name}'}}}</h4>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Name -->
+                                <div class="form-group" ng-hide="encoder.create_date">
+                                    <label class="col-md-3 control-label">Name</label>
+                                    <div class="col-md-9 selectContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                                            <input type="text" class="form-control" placeholder="Name of encoder" ng-model="encoder.name">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- start date -->
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">IP Monitor</label>
+                                    <div class="col-md-9 selectContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                                            <input type="text" class="form-control" placeholder="Ip port streaming" ng-model="encoder.ip_monitor">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- end date -->
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">Source Main</label>
+                                    <div class="col-md-9 selectContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                                            <input type="text" class="form-control" placeholder="Ip source main" ng-model="encoder.source_main">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Location -->
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">Source Backup</label>
+                                    <div class="col-md-9 selectContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                                            <input type="text" class="form-control" placeholder="Ip source backup" ng-model="encoder.source_backup">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Active -->
+                                <div class="form-group">   
+                                    <label class="col-md-3 control-label"><input type="checkbox" ng-model = "encoder.active" ng-checked = "encoder.active">&nbsp;Active?</label>
+                                </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-info" ng-click="save()">Save <span class="glyphicon glyphicon-save"></span></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- End Modal -->
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+var app = angular.module('EncoderApp', []);
+app.controller('EncoderCtrl', function($scope, $http, $window) {
+    $scope.EditMode = false;
+    $scope.onload = function() {
+        $http.get("/event/api/encoder/")
+        .then(function(response) {
+            $scope.encoder_list = response.data['encoder_list'];
+            console.log($scope.encoder_list);
+        });
+    };
+    $scope.onload();
+    //edit
+    $scope.edit = function (field) {
+      $scope.encoder = field;
+      $('#AddModal').modal('show');
+    };
+    //end edit
+    //add
+    $scope.add = function () {
+      $scope.encoder = {'name': '', 'ip_monitor': null, 'source_main': null, 'source_backup': null, 'active': true};
+      $('#AddModal').modal('show');
+    };
+    //end add
+    $scope.save = function() {
+        console.log($scope.encoder);
+        /*
+        if edit --> ID avilable --> put
+        else add new --> ID not available --> post
+        */
+        if ($scope.encoder.id){
+            $http({
+                method : 'PUT',
+                url : "/event/api/encoder/" + $scope.encoder.id.toString() + "/",
+                data : $scope.encoder
+            }).then(function(response){
+                if(response.status == 203){
+                    $window.alert(response.data.detail);
+                }
+                else
+                if (response.status == 202){
+                    $window.alert(response.data.detail);
+                    $scope.onload();
+                    $('#AddModal').modal('hide');
+                }
+            });
+        }
+        else{
+            $http({
+                method : 'POST',
+                url : '/event/api/encoder/',
+                data : $scope.encoder
+            }).then(function(response){
+                if(response.status == 203){
+                    $window.alert(response.data.detail);
+                }
+                else
+                if (response.status == 202){
+                    $window.alert(response.data.detail);
+                    $scope.onload();
+                    $('#AddModal').modal('hide');
+                }
+            });
+        }
+    };
+    // End edit encoder
+    //Delete
+    $scope.delete = function(encoder){
+        if (encoder.id)
+        {
+            if ($window.confirm("Please confirm! remove encoder "+encoder.name+"?")) {
+            $http({
+              method : 'DELETE',
+              url : "/event/api/encoder/" + encoder.id.toString() + "/",
+            }).then(function(response){
+              if(response.status == 203){
+                $window.alert(response.data.detail);
+              }
+              else
+                if (response.status == 204){
+                  $window.alert("Success!");
+                  $scope.onload();
+                }
+            });
+          }//end confirm
+        }
+    }
+    //Delete
+    // Password
+    //Check keypress is Enter
+    $scope.checkIfEnterKeyWasPressed = function($encoder){
+        var keyCode = $encoder.which || $encoder.keyCode;
+            if (keyCode === 13) {
+                $scope.save()
+        }
+    };
+});
+</script>
+    {% endblock %}

@@ -37,10 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'channel',
     'log',
     'agent',
     'accounts',
+    'event',
 ]
 
 MIDDLEWARE = [
@@ -81,9 +83,10 @@ DATABASES = {
     'default': {
     'ENGINE': 'django.db.backends.mysql',
     'NAME': 'monitor',
-    'USER': 'api',
-    'PASSWORD': 'monitorApi@$@',
-    'HOST': '118.69.166.134',
+    'USER': 'root',
+    'PASSWORD': 'root',
+    'HOST': '10.0.0.205',
+    'PORT': 3306
     }
 }
 
@@ -127,3 +130,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+# Session timeout (minute)
+# AUTO_LOGOUT_DELAY = 1
+AUTO_LOGOUT_DELAY = 1440
