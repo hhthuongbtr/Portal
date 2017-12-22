@@ -50,25 +50,24 @@
       $scope.loadData = function(){
 
         //Get selected event monitor
-        $http.get("/event/api/6/")
+        $http.get("/event/api/"+{{monitor.event_id}}+"/")
         .then(function(response) {
             $scope.monitor.event = response.data['event'][0];
         });
 
-        $http.get("/event/api/encoder/1/")
+        $http.get("/event/api/encoder/"+{{monitor.encoder_id}}+"/")
         .then(function(response) {
             $scope.monitor.encoder = response.data['encoder'][0];
         });
 
-        $http.get("/event/api/service/1/")
+        $http.get("/event/api/service/"+{{monitor.service_check_id}}+"/")
         .then(function(response) {
             $scope.monitor.service = response.data['service_check'][0];
         });
-
-        $http.get("/event/api/monitor/28/")
+        $http.get('/event/api/event_monitor/'+{{monitor.id}}+'/')
         .then(function(response) {
-            $scope.monitor.active = response.data['monitor'][0].active;
-            console.log($scope.monitor.active)
+            $scope.monitor.active = response.data['event_monitor'][0].active;
+            console.log({{monitor.event_id}})
         });
         //End Get selected event monitor
 
