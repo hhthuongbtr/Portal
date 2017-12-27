@@ -136,7 +136,7 @@
         console.log($scope.data);
         $http({
             method : 'PUT',
-            url : '/event/api/event_monitor/28/',
+            url : '/event/api/event_monitor/'+{{monitor.id}}+'/',
             data : $scope.data
         }).then(function(response){
             if(response.status == 203){

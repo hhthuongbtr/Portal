@@ -11,6 +11,7 @@
                 <button type="button" ng-class="{'active':currentStep == 1}" class="list-group-item" ng-click="gotoStep(1)">Event: <span class="badge">{{'{{monitor.event.name}'}}}</span></span</button>
                 <button type="button" ng-class="{'active':currentStep == 2}" class="list-group-item" ng-click="gotoStep(2)">Encoder: <span class="badge">{{'{{monitor.encoder.name}'}}}</span></button>
                 <button type="button" ng-class="{'active':currentStep == 3}" class="list-group-item" ng-click="gotoStep(3)">Service: <span class="badge">{{'{{monitor.service.name}'}}}</span></button>
+                <input type="checkbox" ng-model = "monitor.active" ng-checked = "monitor.active">&nbsp;Active?
               </div>
             </div>
           </div>
@@ -47,6 +48,7 @@
     var app = angular.module('app',[]);
     app.controller("WizardController", function ($scope,$http,$timeout,$window){
       $scope.loadData = function(){
+        $scope.monitor.active = true;
         $http.get("/event/api/standby/")
         .then(function(response) {
             $scope.event_list = response.data['event_standby_list'];
@@ -109,6 +111,7 @@
         $scope.data.event_id = $scope.monitor.event.id;
         $scope.data.encoder_id = $scope.monitor.encoder.id;
         $scope.data.service_check_id = $scope.monitor.service.id;
+        $scope.data.active = $scope.monitor.active;
         console.log($scope.data);
         $http({
             method : 'POST',

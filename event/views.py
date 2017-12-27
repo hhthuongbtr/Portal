@@ -791,42 +791,48 @@ class EventMonitorDetail:
 
     @csrf_exempt
     def put(self, request, pk):
-        data = json.loads(request.body)
-        event_monitor = self.get_object(pk)
-        flag = False
-        #status
-        if ('status' in data):
-            event_monitor.status = data['status']
-            flag = True
-        #pid
-        if ('pid' in data):
-            event_monitor.pid = data['pid']
-            flag = True
-        if ('active' in data):
-            event_monitor.active = data['active']
-            flag = True
-        if ('service_check_id' in data):
-            event_monitor.service_check_id = data['service_check_id']
-            flag = True
-        if ('descr' in data):
-            event_monitor.descr = data['descr']
-            flag = True
-        if ('event_id' in data):
-            event_monitor.event_id = data['event_id']
-            flag = True
-        if ('encoder_id' in data):
-            event_monitor.encoder_id = data['encoder_id']
-            flag = True
-        if ('last_update' in data):
-            event_monitor.last_update = data['last_update']
-            flag = True
-        else:
-            date_time = DateTime()
-            now = date_time.get_now()
-            event_monitor.last_update = now
-        if flag:
-            event_monitor.save()
-            return HttpResponse(status=202)
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            agrs["detail"] = "No data input found!"
+            messages = json.dumps(agrs)
+        if data:
+            event_monitor = self.get_object(pk)
+            flag = False
+            #status
+            if ('status' in data):
+                event_monitor.status = data['status']
+                flag = True
+            #pid
+            if ('pid' in data):
+                event_monitor.pid = data['pid']
+                flag = True
+            if ('active' in data):
+                active = 1 if data['active'] else 0
+                event_monitor.active = data['active']
+                flag = True
+            if ('service_check_id' in data):
+                event_monitor.service_check_id = data['service_check_id']
+                flag = True
+            if ('descr' in data):
+                event_monitor.descr = data['descr']
+                flag = True
+            if ('event_id' in data):
+                event_monitor.event_id = data['event_id']
+                flag = True
+            if ('encoder_id' in data):
+                event_monitor.encoder_id = data['encoder_id']
+                flag = True
+            if ('last_update' in data):
+                event_monitor.last_update = data['last_update']
+                flag = True
+            else:
+                date_time = DateTime()
+                now = date_time.get_now()
+                event_monitor.last_update = now
+            if flag:
+                event_monitor.save()
+                return HttpResponse(status=202)
         return HttpResponse(status=400)
 
     @csrf_exempt
@@ -884,7 +890,7 @@ class MonitorDetail:
     def routing(self, request, event_monitor_id):
         if request.method == "GET":
             return self.get(request, event_monitor_id)
-            
+
     @csrf_exempt
     def __init__(self):
         self.event = EventBLL()
