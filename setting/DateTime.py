@@ -34,3 +34,6 @@ class DateTime:
 
     def convert_unix_timestamp_2_human_creadeble(self, timestamp):
         return (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(int(timestamp))))
+
+    def convert_unix_timestamp_2_local_human_creadeble(self, timestamp):
+        return (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(int(timestamp))))
